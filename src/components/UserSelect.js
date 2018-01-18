@@ -6,16 +6,15 @@ import { withAnalytics } from '../modules/analytics';
 import Button from '../modules/button';
 
 class UserSelect extends Component {
-  state = {
-    selectedUser: null,
-  };
 
   handleClick = selectedUser => {
-    this.setState({ selectedUser });
+    if (selectedUser !== this.props.selectedUser) {
+      this.props.onSelected(selectedUser);
+    }
   };
 
   render() {
-    const { selectedUser } = this.state;
+    const { selectedUser } = this.props;
     const USERS = ['Jed', 'Michael', 'Jared'];
 
     return (
@@ -29,7 +28,6 @@ class UserSelect extends Component {
                   raise('select', { ...payload, value: name }),
               }}
               analyticsNamespace="button"
-              disabled={selectedUser === name}
               key={name}
               onClick={() => this.handleClick(name)}
             >

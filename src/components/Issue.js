@@ -7,6 +7,29 @@ import { withAnalytics } from '../modules/analytics';
 import UserSelect from './UserSelect';
 
 class Issue extends Component {
+  state = {
+    assignee: null,
+    reporter: null,
+  }
+
+  onAssigneeSelected = (user: string) => {
+    this.setState({
+      assignee: user,
+    });
+    this.updateIssue('assignee', user);
+  }
+
+  onReporterSelected = (user: string) => {
+    this.setState({
+      reported: user,
+    });
+    this.updateIssue('reporter', user);
+  }
+
+  updateIssue = (fieldName, fieldValue) => {
+    console.log(`APP_STATE_CHANGE: ${fieldName} changed to ${fieldValue}`);
+  }
+
   render() {
     return (
       <div>
@@ -17,6 +40,8 @@ class Issue extends Component {
               select: ({ raise }, payload) => raise('assignee-change', payload),
             }}
             analyticsNamespace="assignee-select"
+            selectedUser={this.state.assignee}
+            onSelected={this.onAssigneeSelected}
           />
         </div>
         <h3>Reporter:</h3>
@@ -26,6 +51,8 @@ class Issue extends Component {
               select: ({ raise }, payload) => raise('reporter-change', payload),
             }}
             analyticsNamespace="reporter-select"
+            selectedUser={this.state.reporter}
+            onSelected={this.onReporterSelected}
           />
         </div>
       </div>
