@@ -39,4 +39,4 @@ class Button extends Component<*> {
   }
 }
 
-export default withAnalytics(Button, { onClick: 'click' });
+export default withAnalytics(Button);

@@ -5,15 +5,20 @@ import React, { Component } from 'react';
 import { withAnalytics } from '../modules/analytics';
 import Button from '../modules/button';
 
+const BoundButton = withAnalytics(Button, { onClick: 'click' });
+
 class UserSelect extends Component {
   handleClick = (selectedUser, analyticsEvent) => {
     if (selectedUser !== this.props.selectedUser) {
       this.props.onSelected(selectedUser);
-      this.props.raiseAnalyticsEvent(
-        analyticsEvent
-          .rename('select')
-          .enhance(payload => ({ ...payload, value: selectedUser }))
-      );
+
+      if (analyticsEvent) {
+        this.props.raiseAnalyticsEvent(
+          analyticsEvent
+            .rename('select')
+            .enhance(payload => ({ ...payload, value: selectedUser }))
+        );
+      }
     }
   };
 
@@ -26,7 +31,7 @@ class UserSelect extends Component {
         <p>Selected user: {selectedUser || 'none'}</p>
         <div>
           {USERS.map(name => (
-            <Button
+            <BoundButton
               analytics={{
                 click: ({ raise }, event) => { }
               }}
@@ -38,7 +43,7 @@ class UserSelect extends Component {
               }
             >
               {name}
-            </Button>
+            </BoundButton>
           ))}
         </div>
       </div>
