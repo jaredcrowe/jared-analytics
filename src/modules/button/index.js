@@ -19,7 +19,8 @@ class Button extends Component<*> {
     fireAnalyticsEvent(
       createAnalyticsEvent('atlaskit-button-click', {
         version: '1.0.0',
-      })
+      }),
+      'atlaskit'
     );
     raiseAnalyticsEvent(
       createAnalyticsEvent('click')
