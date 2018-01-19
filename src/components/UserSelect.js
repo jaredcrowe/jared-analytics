@@ -32,9 +32,7 @@ class UserSelect extends Component {
         <div>
           {USERS.map(name => (
             <BoundButton
-              analytics={{
-                click: ({ raise }, event) => { }
-              }}
+              analytics={{ click: true }}
               analyticsNamespace="button"
               key={name}
               onClick={
