@@ -6,10 +6,14 @@ import { withAnalytics } from '../modules/analytics';
 import Button from '../modules/button';
 
 class UserSelect extends Component {
-
-  handleClick = selectedUser => {
+  handleClick = (selectedUser, analyticsEvent) => {
     if (selectedUser !== this.props.selectedUser) {
       this.props.onSelected(selectedUser);
+      this.props.raiseAnalyticsEvent(
+        analyticsEvent
+          .rename('select')
+          .enhance(payload => ({ ...payload, value: selectedUser }))
+      );
     }
   };
 
@@ -24,12 +28,14 @@ class UserSelect extends Component {
           {USERS.map(name => (
             <Button
               analytics={{
-                click: ({ raise }, payload) =>
-                  raise('select', { ...payload, value: name }),
+                click: ({ raise }, event) => { }
               }}
               analyticsNamespace="button"
               key={name}
-              onClick={() => this.handleClick(name)}
+              onClick={
+                (event, analyticsEvent) =>
+                  this.handleClick(name, analyticsEvent)
+              }
             >
               {name}
             </Button>

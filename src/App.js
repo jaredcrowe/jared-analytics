@@ -13,16 +13,24 @@ class App extends Component {
           <div style={{ padding: '40px' }}>
             <Issue
               analytics={{
-                'assignee-change': ({ fire }, payload) =>
-                  fire('jira-issue-updated', {
-                    ...payload,
-                    field: 'assignee',
-                  }),
-                'reporter-change': ({ fire }, payload) =>
-                  fire('jira-issue-updated', {
-                    ...payload,
-                    field: 'reporter',
-                  }),
+                'assignee-change': ({ fire }, event) =>
+                  fire(
+                    event
+                      .rename('jira-issue-updated')
+                      .enhance(payload => ({
+                        ...payload,
+                        field: 'assignee',
+                      }))
+                  ),
+                'reporter-change': ({ fire }, event) =>
+                  fire(
+                    event
+                      .rename('jira-issue-updated')
+                      .enhance(payload => ({
+                        ...payload,
+                        field: 'reporter',
+                      }))
+                  ),
               }}
               analyticsNamespace="issue"
             />

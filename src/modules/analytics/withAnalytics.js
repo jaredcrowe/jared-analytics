@@ -3,9 +3,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-const noop = () => {};
+import AnalyticsEvent from './AnalyticsEvent';
 
-export default WrappedComponent =>
+const noop = () => { };
+
+export default (WrappedComponent, bindProps = []) =>
   class WithAnalytics extends Component<*> {
     static defaultProps = {
       analyticsNamespace: null,
@@ -22,28 +24,54 @@ export default WrappedComponent =>
       analyticsPath: PropTypes.array,
     };
 
+    enqueuedCallbacks = [];
+
     getChildContext = () => ({
       raiseAnalyticsEvent: this.raiseAnalyticsEvent,
       analyticsPath: this.getAnalyticsPath(),
     });
 
-    raiseAnalyticsEvent = (eventName, eventPayload) => {
+    createAnalyticsEvent = (name, payload) =>
+      new AnalyticsEvent(name, payload, {
+        path: this.getAnalyticsPath(),
+      })
+
+    raiseAnalyticsEvent = (event) => {
       const { analytics: analyticsMap } = this.props;
-      if (!analyticsMap || !analyticsMap[eventName]) {
+      if (!analyticsMap || !analyticsMap[event.name]) {
         return;
       }
+
+      this.triggerEnqueuedCallbacks(event);
 
       const raise = this.context.raiseAnalyticsEvent || noop;
       const fire = this.context.fireAnalyticsEvent || noop;
 
-      if (typeof analyticsMap[eventName] === 'function') {
-        analyticsMap[eventName]({ fire, raise }, eventPayload);
+      if (typeof analyticsMap[event.name] === 'function') {
+        analyticsMap[event.name]({ fire, raise }, event);
       }
 
-      if (typeof analyticsMap[eventName] === 'string') {
-        raise(analyticsMap[eventName], eventPayload);
+      if (typeof analyticsMap[event.name] === 'string') {
+        event.rename(analyticsMap[event.name]);
+        raise(event);
       }
     };
+
+    enqueueCallback = (eventName, trigger) => {
+      this.enqueuedCallbacks = [
+        ...this.enqueuedCallbacks,
+        { eventName, trigger },
+      ];
+    }
+
+    triggerEnqueuedCallbacks = (event) => {
+      this.enqueuedCallbacks
+        .filter(callback => callback.eventName === event.name)
+        .forEach(callback => callback.trigger(event));
+
+      this.enqueuedCallbacks = this.enqueuedCallbacks
+        .filter(callback => callback.eventName !== event.name);
+    }
 
     getAnalyticsPath = () => {
       const { analyticsNamespace } = this.props;
@@ -53,13 +81,35 @@ export default WrappedComponent =>
         : ancestorNamespace;
     };
 
+    getBoundProps = () => {
+      const boundProps = Object.keys(bindProps).reduce(
+        (bound, propName) => ({
+          ...bound,
+          [propName]: (...args) => {
+            this.enqueueCallback(
+              bindProps[propName],
+              event => this.props[propName](...args, event)
+            )
+          }
+        }),
+        {}
+      );
+
+      return {
+        ...this.props,
+        ...boundProps,
+      };
+    }
+
     render() {
+      const boundProps = this.getBoundProps();
+
       return (
         <WrappedComponent
+          createAnalyticsEvent={this.createAnalyticsEvent}
           raiseAnalyticsEvent={this.raiseAnalyticsEvent}
           fireAnalyticsEvent={this.context.fireAnalyticsEvent}
-          analyticsPath={this.getAnalyticsPath()}
-          {...this.props}
+          {...boundProps}
         />
       );
     }

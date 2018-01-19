@@ -37,7 +37,9 @@ class Issue extends Component {
         <div>
           <UserSelect
             analytics={{
-              select: ({ raise }, payload) => raise('assignee-change', payload),
+              select: ({ raise }, event) => raise(
+                event.rename('assignee-change')
+              ),
             }}
             analyticsNamespace="assignee-select"
             selectedUser={this.state.assignee}
@@ -48,7 +50,9 @@ class Issue extends Component {
         <div>
           <UserSelect
             analytics={{
-              select: ({ raise }, payload) => raise('reporter-change', payload),
+              select: ({ raise }, event) => raise(
+                event.rename('reporter-change')
+              ),
             }}
             analyticsNamespace="reporter-select"
             selectedUser={this.state.reporter}

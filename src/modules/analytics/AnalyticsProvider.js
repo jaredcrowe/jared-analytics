@@ -12,9 +12,9 @@ export default class AnalyticsProvider extends Component {
     fireAnalyticsEvent: this.fireAnalyticsEvent,
   });
 
-  fireAnalyticsEvent = (eventName, eventPayload) => {
-    console.log('FIRING:', eventName, eventPayload);
-  };
+  fireAnalyticsEvent = event => {
+    console.log('FIRING:', event);
+  }
 
   render() {
     return this.props.children;
