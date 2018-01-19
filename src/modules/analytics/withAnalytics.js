@@ -37,12 +37,12 @@ export default (WrappedComponent, bindProps = []) =>
       })
 
     raiseAnalyticsEvent = (event) => {
+      this.triggerEnqueuedCallbacks(event);
+
       const { analytics: analyticsMap } = this.props;
       if (!analyticsMap || !analyticsMap[event.name]) {
         return;
       }
-
-      this.triggerEnqueuedCallbacks(event);
 
       const raise = this.context.raiseAnalyticsEvent || noop;
       const fire = this.context.fireAnalyticsEvent || noop;
