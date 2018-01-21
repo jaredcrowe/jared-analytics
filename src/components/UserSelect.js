@@ -20,7 +20,7 @@ class UserSelect extends Component {
         );
       }
     }
-  };
+  }
 
   render() {
     const { selectedUser } = this.props;

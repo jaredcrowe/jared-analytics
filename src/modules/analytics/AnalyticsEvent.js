@@ -7,12 +7,12 @@ export default class AnalyticsEvent {
     this.meta = meta;
   }
 
-  rename = (name) => {
+  rename = name => {
     this.name = name;
     return this;
   }
 
-  enhance = (enhancer) => {
+  enhance = enhancer => {
     if (typeof enhancer === 'function') {
       this.payload = enhancer(this.payload);
     }
@@ -26,5 +26,5 @@ export default class AnalyticsEvent {
     }
 
     return this;
-  };
+  }
 }

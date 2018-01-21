@@ -16,20 +16,31 @@ export default (WrappedComponent, bindProps = []) =>
     static contextTypes = {
       fireAnalyticsEvent: PropTypes.func,
       raiseAnalyticsEvent: PropTypes.func,
-      analyticsPath: PropTypes.array,
+      getAnalyticsPath: PropTypes.func,
     };
 
     static childContextTypes = {
       raiseAnalyticsEvent: PropTypes.func,
-      analyticsPath: PropTypes.array,
+      getAnalyticsPath: PropTypes.func,
     };
 
     enqueuedCallbacks = [];
 
     getChildContext = () => ({
       raiseAnalyticsEvent: this.raiseAnalyticsEvent,
-      analyticsPath: this.getAnalyticsPath(),
-    });
+      getAnalyticsPath: this.getAnalyticsPath,
+    })
+
+    getAnalyticsPath = () => {
+      const { analyticsNamespace } = this.props;
+      const ancestorNamespaces =
+        (typeof this.context.getAnalyticsPath === 'function'
+          && this.context.getAnalyticsPath())
+        || [];
+      return analyticsNamespace
+        ? [...ancestorNamespaces, analyticsNamespace]
+        : ancestorNamespaces;
+    }
 
     createAnalyticsEvent = (name, payload) =>
       new AnalyticsEvent(name, payload, {
@@ -55,7 +66,7 @@ export default (WrappedComponent, bindProps = []) =>
         event.rename(analyticsMap[event.name]);
         raise(event);
       }
-    };
+    }
 
     enqueueCallback = (eventName, trigger) => {
       this.enqueuedCallbacks = [
@@ -72,14 +83,6 @@ export default (WrappedComponent, bindProps = []) =>
       this.enqueuedCallbacks = this.enqueuedCallbacks
         .filter(callback => callback.eventName !== event.name);
     }
-
-    getAnalyticsPath = () => {
-      const { analyticsNamespace } = this.props;
-      const ancestorNamespace = this.context.analyticsPath || [];
-      return analyticsNamespace
-        ? [...ancestorNamespace, analyticsNamespace]
-        : ancestorNamespace;
-    };
 
     getBoundProps = () => {
       const boundProps = Object.keys(bindProps).reduce(
