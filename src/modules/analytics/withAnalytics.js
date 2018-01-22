@@ -68,6 +68,14 @@ export default (WrappedComponent, bindProps = []) =>
       }
     }
 
+    fireAnalyticsEvent = event => {
+      const { fireAnalyticsEvent } = this.context;
+
+      if (typeof fireAnalyticsEvent === 'function') {
+        fireAnalyticsEvent(event);
+      }
+    }
+
     enqueueCallback = (eventName, trigger) => {
       this.enqueuedCallbacks = [
         ...this.enqueuedCallbacks,
@@ -111,7 +119,7 @@ export default (WrappedComponent, bindProps = []) =>
         <WrappedComponent
           createAnalyticsEvent={this.createAnalyticsEvent}
           raiseAnalyticsEvent={this.raiseAnalyticsEvent}
-          fireAnalyticsEvent={this.context.fireAnalyticsEvent}
+          fireAnalyticsEvent={this.fireAnalyticsEvent}
           {...boundProps}
         />
       );
