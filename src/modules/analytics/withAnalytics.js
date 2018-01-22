@@ -68,11 +68,11 @@ export default (WrappedComponent, bindProps = []) =>
       }
     }
 
-    fireAnalyticsEvent = event => {
+    fireAnalyticsEvent = (event, channel) => {
       const { fireAnalyticsEvent } = this.context;
 
       if (typeof fireAnalyticsEvent === 'function') {
-        fireAnalyticsEvent(event);
+        fireAnalyticsEvent(event, channel);
       }
     }
 
