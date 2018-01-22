@@ -57,7 +57,6 @@ export default (WrappedComponent, bindProps = []) =>
       }
 
       const raise = this.context.raiseAnalyticsEvent || noop;
-      const fire = this.context.fireAnalyticsEvent || noop;
 
       if (typeof analyticsMap[event.name] === 'function') {
         analyticsMap[event.name](event, raise);
@@ -107,14 +106,12 @@ export default (WrappedComponent, bindProps = []) =>
 
     render() {
       const boundProps = this.getBoundProps();
-      const { analyticsNamespace, ...props } = boundProps;
 
       return (
         <WrappedComponent
           createAnalyticsEvent={this.createAnalyticsEvent}
           raiseAnalyticsEvent={this.raiseAnalyticsEvent}
-          fireAnalyticsEvent={this.context.fireAnalyticsEvent}
-          {...props}
+          {...boundProps}
         />
       );
     }

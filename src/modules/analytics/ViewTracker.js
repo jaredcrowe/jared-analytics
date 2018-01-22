@@ -6,11 +6,8 @@ import withAnalytics from './withAnalytics';
 
 class ViewTracker extends Component {
   componentDidMount() {
-    const { createAnalyticsEvent, fireAnalyticsEvent, page } = this.props;
-    fireAnalyticsEvent(
-      createAnalyticsEvent('page-view', { page }),
-      'jira'
-    );
+    const { createAnalyticsEvent, page } = this.props;
+    createAnalyticsEvent('page-view', { page }).fire('jira');
   }
 
   render() { return null; }
