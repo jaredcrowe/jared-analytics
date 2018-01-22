@@ -34,10 +34,8 @@ class UserSelect extends Component {
             <BoundButton
               analyticsNamespace="button"
               key={name}
-              onClick={
-                (event, analyticsEvent) =>
-                  this.handleClick(name, analyticsEvent)
-              }
+              onClick={(event, analyticsEvent) =>
+                this.handleClick(name, analyticsEvent)}
             >
               {name}
             </BoundButton>

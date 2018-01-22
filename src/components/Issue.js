@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 
-import { withAnalytics } from '../modules/analytics';
+import { AnalyticsBoundary, withAnalytics } from '../modules/analytics';
 
 import UserSelect from './UserSelect';
 
@@ -30,17 +30,31 @@ class Issue extends Component {
     console.log(`APP_STATE_CHANGE: ${fieldName} changed to ${fieldValue}`);
   }
 
+  onEvent = (event, raise) => {
+    const { issueId } = this.props;
+    switch (event.name) {
+      case 'assignee-change':
+        event
+          .rename('jira-issue-updated')
+          .enhance(payload => ({ ...payload, field: 'assignee', issueId }))
+          .fire('jira');
+        break;
+      case 'reporter-change':
+        event
+          .rename('jira-issue-updated')
+          .enhance(payload => ({ ...payload, field: 'reporter', issueId }))
+          .fire('jira');
+        break;
+    }
+  }
+
   render() {
     return (
-      <div>
+      <AnalyticsBoundary onEvent={this.onEvent}>
         <h3>Assignee:</h3>
         <div>
           <UserSelect
-            analytics={{
-              select: ({ raise }, event) => raise(
-                event.rename('assignee-change')
-              ),
-            }}
+            analytics={{ select: 'assignee-change' }}
             analyticsNamespace="assignee-select"
             selectedUser={this.state.assignee}
             onSelected={this.onAssigneeSelected}
@@ -49,17 +63,13 @@ class Issue extends Component {
         <h3>Reporter:</h3>
         <div>
           <UserSelect
-            analytics={{
-              select: ({ raise }, event) => raise(
-                event.rename('reporter-change')
-              ),
-            }}
+            analytics={{ select: 'reporter-change' }}
             analyticsNamespace="reporter-select"
             selectedUser={this.state.reporter}
             onSelected={this.onReporterSelected}
           />
         </div>
-      </div>
+      </AnalyticsBoundary>
     );
   }
 }

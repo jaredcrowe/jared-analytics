@@ -42,10 +42,11 @@ export default (WrappedComponent, bindProps = []) =>
         : ancestorNamespaces;
     }
 
-    createAnalyticsEvent = (name, payload) =>
-      new AnalyticsEvent(name, payload, {
-        path: this.getAnalyticsPath(),
-      })
+    createAnalyticsEvent = (name, payload) => {
+      const meta = { path: this.getAnalyticsPath() };
+      const fire = this.context.fireAnalyticsEvent || noop;
+      return new AnalyticsEvent(name, payload, meta, fire);
+    }
 
     raiseAnalyticsEvent = (event) => {
       this.triggerEnqueuedCallbacks(event);
@@ -59,7 +60,7 @@ export default (WrappedComponent, bindProps = []) =>
       const fire = this.context.fireAnalyticsEvent || noop;
 
       if (typeof analyticsMap[event.name] === 'function') {
-        analyticsMap[event.name]({ fire, raise }, event);
+        analyticsMap[event.name](event, raise);
       }
 
       if (typeof analyticsMap[event.name] === 'string') {
@@ -106,13 +107,14 @@ export default (WrappedComponent, bindProps = []) =>
 
     render() {
       const boundProps = this.getBoundProps();
+      const { analyticsNamespace, ...props } = boundProps;
 
       return (
         <WrappedComponent
           createAnalyticsEvent={this.createAnalyticsEvent}
           raiseAnalyticsEvent={this.raiseAnalyticsEvent}
           fireAnalyticsEvent={this.context.fireAnalyticsEvent}
-          {...boundProps}
+          {...props}
         />
       );
     }
