@@ -6,25 +6,31 @@ import { withAnalytics } from '../analytics';
 
 class Button extends Component<*> {
   handleClick = e => {
-    this.props.fireAnalyticsEvent('atlaskit-button-click', {
-      source: this.props.analyticsPath,
-      version: '1.0.0',
-    });
-    this.props.raiseAnalyticsEvent('click', {
-      source: this.props.analyticsPath,
-    });
-
     if (this.props.onClick) {
       this.props.onClick(e);
     }
+
+    const {
+      createAnalyticsEvent,
+      fireAnalyticsEvent,
+      raiseAnalyticsEvent,
+    } = this.props;
+
+    fireAnalyticsEvent(
+      createAnalyticsEvent('atlaskit-button-click', { version: '1.0.0' }),
+      'atlaskit'
+    );
+    raiseAnalyticsEvent(
+      createAnalyticsEvent('click')
+    );
   };
 
   render() {
     const {
       onClick,
+      createAnalyticsEvent,
       fireAnalyticsEvent,
       raiseAnalyticsEvent,
-      analyticsPath,
       analyticsNamespace,
       ...rest
     } = this.props;
