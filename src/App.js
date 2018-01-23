@@ -18,31 +18,7 @@ class App extends Component {
         >
           <PageBoundary analyticsNamespace="backlog">
             <div style={{ padding: '40px' }}>
-              <Issue
-                analytics={{
-                  'assignee-change': ({ fire }, event) =>
-                    fire(
-                      event
-                        .rename('jira-issue-updated')
-                        .enhance(payload => ({
-                          ...payload,
-                          field: 'assignee',
-                        })),
-                      'jira'
-                    ),
-                  'reporter-change': ({ fire }, event) =>
-                    fire(
-                      event
-                        .rename('jira-issue-updated')
-                        .enhance(payload => ({
-                          ...payload,
-                          field: 'reporter',
-                        })),
-                      'jira'
-                    ),
-                }}
-                analyticsNamespace="issue"
-              />
+              <Issue analyticsNamespace="issue" issueId={123} />
             </div>
           </PageBoundary>
         </AnalyticsListener>
