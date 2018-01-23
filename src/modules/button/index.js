@@ -6,19 +6,19 @@ import { withAnalytics } from '../analytics';
 
 class Button extends Component<*> {
   handleClick = e => {
-    if (this.props.onClick) {
-      this.props.onClick(e);
-    }
-
     const {
       createAnalyticsEvent,
       raiseAnalyticsEvent,
     } = this.props;
 
+    raiseAnalyticsEvent(createAnalyticsEvent('click'));
+
     createAnalyticsEvent('atlaskit-button-click', { version: '1.0.0' })
       .fire('atlaskit');
 
-    raiseAnalyticsEvent(createAnalyticsEvent('click'));
+    if (this.props.onClick) {
+      this.props.onClick(e);
+    }
   };
 
   render() {
@@ -33,4 +33,5 @@ class Button extends Component<*> {
   }
 }
 
-export default withAnalytics(Button);
+export default withAnalytics(Button, { click: 'onClick' });
+// export default withAnalytics(Button);

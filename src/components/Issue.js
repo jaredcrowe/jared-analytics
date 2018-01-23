@@ -12,22 +12,12 @@ class Issue extends Component {
     reporter: null,
   }
 
-  onAssigneeSelected = (user: string) => {
-    this.setState({
-      assignee: user,
-    });
-    this.updateIssue('assignee', user);
+  onAssigneeChange = (user: string) => {
+    this.setState({ assignee: user });
   }
 
-  onReporterSelected = (user: string) => {
-    this.setState({
-      reported: user,
-    });
-    this.updateIssue('reporter', user);
-  }
-
-  updateIssue = (fieldName, fieldValue) => {
-    console.log(`APP_STATE_CHANGE: ${fieldName} changed to ${fieldValue}`);
+  onReporterChange = (user: string) => {
+    this.setState({ reporter: user });
   }
 
   onEvent = (event, raise) => {
@@ -56,8 +46,8 @@ class Issue extends Component {
           <UserSelect
             analytics={{ select: 'assignee-change' }}
             analyticsNamespace="assignee-select"
-            selectedUser={this.state.assignee}
-            onSelected={this.onAssigneeSelected}
+            value={this.state.assignee}
+            onChange={this.onAssigneeChange}
           />
         </div>
         <h3>Reporter:</h3>
@@ -65,8 +55,8 @@ class Issue extends Component {
           <UserSelect
             analytics={{ select: 'reporter-change' }}
             analyticsNamespace="reporter-select"
-            selectedUser={this.state.reporter}
-            onSelected={this.onReporterSelected}
+            value={this.state.reporter}
+            onChange={this.onReporterChange}
           />
         </div>
       </AnalyticsBoundary>
