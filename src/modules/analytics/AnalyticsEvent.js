@@ -1,11 +1,12 @@
 // @flow
 
 export default class AnalyticsEvent {
-  constructor(name, payload, meta, fireCallback) {
+  constructor(name, payload, meta, { fire: fireCallback, raise: raiseCallback }) {
     this.name = name;
     this.payload = payload;
     this.meta = meta;
     this.fireCallback = fireCallback;
+    this.raiseCallback = raiseCallback;
   }
 
   rename = name => {
@@ -31,5 +32,11 @@ export default class AnalyticsEvent {
 
   fire = channel => {
     this.fireCallback(this, channel);
+    return this;
+  }
+
+  raise = () => {
+    this.raiseCallback(this);
+    return this;
   }
 }

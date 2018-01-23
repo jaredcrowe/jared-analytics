@@ -45,7 +45,8 @@ export default (WrappedComponent, bindEvents = {}) =>
     createAnalyticsEvent = (name, payload = {}) => {
       const meta = { path: this.getAnalyticsPath() };
       const fire = this.context.fireAnalyticsEvent || noop;
-      return new AnalyticsEvent(name, payload, meta, fire);
+      const raise = this.raiseAnalyticsEvent;
+      return new AnalyticsEvent(name, payload, meta, { fire, raise });
     }
 
     raiseAnalyticsEvent = event => {
@@ -122,11 +123,15 @@ export default (WrappedComponent, bindEvents = {}) =>
     }
 
     render() {
+      const {
+        analyticsNamespace,
+        ...permittedProps
+      } = this.props;
+
       const props = {
-        ...this.props,
+        ...permittedProps,
         ...this.bindEventsToProps(),
         createAnalyticsEvent: this.createAnalyticsEvent,
-        raiseAnalyticsEvent: this.raiseAnalyticsEvent,
       };
 
       return (

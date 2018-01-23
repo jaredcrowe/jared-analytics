@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import { withAnalytics } from '../modules/analytics';
 import Button from '../modules/button';
 
+const BoundButton = withAnalytics(Button, { click: 'onClick' });
+
 class UserSelect extends Component {
   state = {
     isCheckboxChecked: false,
@@ -15,11 +17,10 @@ class UserSelect extends Component {
       this.props.onChange(selectedUser);
 
       if (analyticsEvent) {
-        this.props.raiseAnalyticsEvent(
-          analyticsEvent
-            .rename('select')
-            .enhance(payload => ({ ...payload, value: selectedUser }))
-        );
+        analyticsEvent
+          .rename('select')
+          .enhance(payload => ({ ...payload, value: selectedUser }))
+          .raise();
       }
     }
   }
@@ -28,10 +29,10 @@ class UserSelect extends Component {
     const isCheckboxChecked = !this.state.isCheckboxChecked;
     this.setState({ isCheckboxChecked });
 
-    const { createAnalyticsEvent, raiseAnalyticsEvent } = this.props;
-    raiseAnalyticsEvent(
-      createAnalyticsEvent('checkbox-change', { checked: isCheckboxChecked })
-    );
+    this.props.createAnalyticsEvent(
+      'checkbox-change',
+      { checked: isCheckboxChecked }
+    ).raise();
   }
 
   render() {
@@ -43,14 +44,14 @@ class UserSelect extends Component {
         <p>Selected user: {value || 'none'}</p>
         <div>
           {USERS.map(name => (
-            <Button
+            <BoundButton
               analyticsNamespace="button"
               key={name}
               onClick={(event, analyticsEvent) =>
                 this.handleClick(name, analyticsEvent)}
             >
               {name}
-            </Button>
+            </BoundButton>
           ))}
           <p>
             <label>

@@ -26,16 +26,16 @@ class Issue extends Component {
       case 'assignee-change':
         event
           .rename('jira-issue-updated')
-          .enhance(payload => ({ ...payload, field: 'assignee', issueId }))
+          .enhance({ field: 'assignee', issueId })
           .fire('jira');
         break;
       case 'reporter-change':
         event
           .rename('jira-issue-updated')
-          .enhance(payload => ({ ...payload, field: 'reporter', issueId }))
+          .enhance({ field: 'reporter', issueId })
           .fire('jira');
         break;
-      case 'checkbox-change':
+      default:
         event.fire('jira');
         break;
     }

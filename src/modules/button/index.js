@@ -6,10 +6,12 @@ import { withAnalytics } from '../analytics';
 
 class Button extends Component<*> {
   handleClick = e => {
-    const { createAnalyticsEvent, raiseAnalyticsEvent } = this.props;
-    raiseAnalyticsEvent(createAnalyticsEvent('click'));
-    createAnalyticsEvent('atlaskit-button-click', { version: '1.0.0' })
-      .fire('atlaskit');
+    const { createAnalyticsEvent } = this.props;
+    createAnalyticsEvent('click').raise();
+    createAnalyticsEvent(
+      'atlaskit-button-click',
+      { version: '1.0.0' }
+    ).fire('atlaskit');
 
     if (this.props.onClick) {
       this.props.onClick(e);
@@ -17,16 +19,9 @@ class Button extends Component<*> {
   };
 
   render() {
-    const {
-      onClick,
-      createAnalyticsEvent,
-      raiseAnalyticsEvent,
-      analyticsNamespace,
-      ...rest
-    } = this.props;
-    return <button {...rest} onClick={this.handleClick} />;
+    const { createAnalyticsEvent, ...props } = this.props;
+    return <button {...props} onClick={this.handleClick} />;
   }
 }
 
-export default withAnalytics(Button, { click: 'onClick' });
-// export default withAnalytics(Button);
+export default withAnalytics(Button);
