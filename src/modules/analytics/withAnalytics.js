@@ -48,7 +48,7 @@ export default (WrappedComponent, bindEvents = {}) =>
       return new AnalyticsEvent(name, payload, meta, fire);
     }
 
-    raiseAnalyticsEvent = (event) => {
+    raiseAnalyticsEvent = event => {
       // If this event is bound to a prop callback, defer it and pass it in when
       // that callback is fired.
       if (Object.keys(bindEvents).includes(event.name)) {

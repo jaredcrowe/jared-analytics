@@ -6,13 +6,8 @@ import { withAnalytics } from '../analytics';
 
 class Button extends Component<*> {
   handleClick = e => {
-    const {
-      createAnalyticsEvent,
-      raiseAnalyticsEvent,
-    } = this.props;
-
+    const { createAnalyticsEvent, raiseAnalyticsEvent } = this.props;
     raiseAnalyticsEvent(createAnalyticsEvent('click'));
-
     createAnalyticsEvent('atlaskit-button-click', { version: '1.0.0' })
       .fire('atlaskit');
 

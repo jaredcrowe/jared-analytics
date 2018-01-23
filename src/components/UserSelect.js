@@ -6,6 +6,10 @@ import { withAnalytics } from '../modules/analytics';
 import Button from '../modules/button';
 
 class UserSelect extends Component {
+  state = {
+    isCheckboxChecked: false,
+  }
+
   handleClick = (selectedUser, analyticsEvent) => {
     if (selectedUser !== this.props.value) {
       this.props.onChange(selectedUser);
@@ -18,6 +22,16 @@ class UserSelect extends Component {
         );
       }
     }
+  }
+
+  onCheckboxChange = () => {
+    const isCheckboxChecked = !this.state.isCheckboxChecked;
+    this.setState({ isCheckboxChecked });
+
+    const { createAnalyticsEvent, raiseAnalyticsEvent } = this.props;
+    raiseAnalyticsEvent(
+      createAnalyticsEvent('checkbox-change', { checked: isCheckboxChecked })
+    );
   }
 
   render() {
@@ -38,6 +52,16 @@ class UserSelect extends Component {
               {name}
             </Button>
           ))}
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                onChange={this.onCheckboxChange}
+                checked={this.state.isCheckboxChecked}
+              />
+              Here is a deeply nested checkbox which will emit an event that is caught by the Issue component.
+            </label>
+          </p>
         </div>
       </div>
     );

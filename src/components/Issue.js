@@ -20,7 +20,7 @@ class Issue extends Component {
     this.setState({ reporter: user });
   }
 
-  onEvent = (event, raise) => {
+  onEvent = event => {
     const { issueId } = this.props;
     switch (event.name) {
       case 'assignee-change':
@@ -34,6 +34,9 @@ class Issue extends Component {
           .rename('jira-issue-updated')
           .enhance(payload => ({ ...payload, field: 'reporter', issueId }))
           .fire('jira');
+        break;
+      case 'checkbox-change':
+        event.fire('jira');
         break;
     }
   }
