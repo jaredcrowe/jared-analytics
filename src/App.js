@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import '@atlaskit/css-reset';
 
-import { AnalyticsListener, PageBoundary } from './modules/analytics';
+import { AnalyticsListener } from './modules/analytics';
 
 import Issue from './components/Issue';
+import { PageBoundary } from './components/analytics';
 
 class App extends Component {
   render() {
