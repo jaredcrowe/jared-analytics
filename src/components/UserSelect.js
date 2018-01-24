@@ -4,10 +4,18 @@ import React, { Component } from 'react';
 
 import { withAnalytics } from '../modules/analytics';
 import Button from '../modules/button';
+import { type withAnalyticsProps } from '../modules/analytics/withAnalytics';
 
-const BoundButton = withAnalytics(Button, { click: 'onClick' });
+type Props = withAnalyticsProps & {
+  value: string,
+  onChange: (user: string) => void,
+};
 
-class UserSelect extends Component {
+type State = {
+  isCheckboxChecked: boolean,
+}
+
+class UserSelect extends Component<Props, State> {
   state = {
     isCheckboxChecked: false,
   }
@@ -44,14 +52,15 @@ class UserSelect extends Component {
         <p>Selected user: {value || 'none'}</p>
         <div>
           {USERS.map(name => (
-            <BoundButton
+            <Button
               analyticsNamespace="button"
+              bindEventsToProps={{click: 'onClick' }}
               key={name}
               onClick={(event, analyticsEvent) =>
                 this.handleClick(name, analyticsEvent)}
             >
               {name}
-            </BoundButton>
+            </Button>
           ))}
           <p>
             <label>

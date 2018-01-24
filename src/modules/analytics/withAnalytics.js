@@ -1,16 +1,35 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component, type ComponentType } from 'react';
 import PropTypes from 'prop-types';
 
-import AnalyticsEvent from './AnalyticsEvent';
+import AnalyticsEvent, { type RaiseAnalyticsEvent } from './AnalyticsEvent';
 
-const noop = () => { };
+const noop = (...args: any) => {};
 
-export default (WrappedComponent, bindEvents = {}) =>
-  class WithAnalytics extends Component<*> {
+type RenamedEvent = string;
+type CallbackPropName = string;
+type RaisedEventHandler = (event: AnalyticsEvent, raise: RaiseAnalyticsEvent) => void;
+
+export type withAnalyticsProps = {
+  createAnalyticsEvent: (name: string, payload: {}) => AnalyticsEvent,
+}
+
+type Props = withAnalyticsProps & {
+  analyticsNamespace: string,
+  analytics?: {
+    [raisedEventName: string]: RenamedEvent | RaisedEventHandler,
+  },
+  bindEventsToProps: {
+    [eventName: string]: CallbackPropName,
+  },
+}
+
+export default (WrappedComponent: ComponentType<Props>) =>
+  class WithAnalytics extends Component<$Diff<Props, withAnalyticsProps>> {
     static defaultProps = {
       analyticsNamespace: null,
+      bindEventsToProps: {},
     };
 
     static contextTypes = {
@@ -42,17 +61,17 @@ export default (WrappedComponent, bindEvents = {}) =>
         : ancestorNamespaces;
     }
 
-    createAnalyticsEvent = (name, payload = {}) => {
+    createAnalyticsEvent = (name: string, payload: {} = {}) => {
       const meta = { path: this.getAnalyticsPath() };
       const fire = this.context.fireAnalyticsEvent || noop;
       const raise = this.raiseAnalyticsEvent;
       return new AnalyticsEvent(name, payload, meta, { fire, raise });
     }
 
-    raiseAnalyticsEvent = event => {
+    raiseAnalyticsEvent = (event: AnalyticsEvent) => {
       // If this event is bound to a prop callback, defer it and pass it in when
       // that callback is fired.
-      if (Object.keys(bindEvents).includes(event.name)) {
+      if (Object.keys(this.props.bindEventsToProps).includes(event.name)) {
         this.enqueueEvent(event);
         return;
       }
@@ -81,14 +100,14 @@ export default (WrappedComponent, bindEvents = {}) =>
       }
     }
 
-    enqueueEvent = event => {
+    enqueueEvent = (event: AnalyticsEvent) => {
       this.enqueuedEvents = [
         event,
         ...this.enqueuedEvents,
       ];
     }
 
-    getEnqueuedEvent = eventName => {
+    getEnqueuedEvent = (eventName: string) => {
       const event = this.enqueuedEvents.find(e => e.name === eventName);
       this.enqueuedEvents = this.enqueuedEvents
         .filter(e => e.name !== eventName);
@@ -100,13 +119,14 @@ export default (WrappedComponent, bindEvents = {}) =>
     // should capture it and pass it as an extra argument to that callback prop,
     // rather than letting the consumer handle the event as normal.
     bindEventsToProps = () => {
-      if (!bindEvents) {
+      const bindEventsMap = this.props.bindEventsToProps;
+      if (!bindEventsMap) {
         return this.props;
       }
 
-      return Object.keys(bindEvents)
+      return Object.keys(bindEventsMap)
         .reduce((bound, eventName) => {
-          const propName = bindEvents[eventName];
+          const propName = bindEventsMap[eventName];
           const providedCallback = this.props[propName];
           if (!providedCallback) {
             return bound;
