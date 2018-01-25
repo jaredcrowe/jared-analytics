@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 
 import { withAnalytics } from '../modules/analytics';
 import Button, { ButtonWithCreateEventCallback } from '../modules/button';
-import { type withAnalyticsProps } from '../modules/analytics/withAnalytics';
+import Checkbox from '../modules/checkbox';
 
-type Props = withAnalyticsProps & {
+type Props = {
   value: string,
-  useEventCallbackButton: boolean,
+  useEventCallbackButton?: boolean,
   onChange: (user: string) => void,
 };
 
@@ -41,11 +41,6 @@ class UserSelect extends Component<Props, State> {
   onCheckboxChange = () => {
     const isCheckboxChecked = !this.state.isCheckboxChecked;
     this.setState({ isCheckboxChecked });
-
-    this.props.createAnalyticsEvent(
-      'checkbox-change',
-      { checked: isCheckboxChecked }
-    ).raise();
   }
 
   render() {
@@ -71,8 +66,8 @@ class UserSelect extends Component<Props, State> {
           ))}
           <p>
             <label>
-              <input
-                type="checkbox"
+              <Checkbox
+                analytics={{ checked: 'checkbox-change' }}
                 onChange={this.onCheckboxChange}
                 checked={this.state.isCheckboxChecked}
               />
@@ -85,4 +80,4 @@ class UserSelect extends Component<Props, State> {
   }
 }
 
-export default withAnalytics(UserSelect);
+export default withAnalytics()(UserSelect);

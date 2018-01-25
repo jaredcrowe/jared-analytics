@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, type ComponentType } from 'react';
+import React, { Component, type ComponentType, type ElementType } from 'react';
 import PropTypes from 'prop-types';
 
 import AnalyticsEvent, { type RaiseAnalyticsEvent } from './AnalyticsEvent';
@@ -22,18 +22,18 @@ export type withAnalyticsProps = {
 }
 
 type Props = {
-  analyticsNamespace: string,
+  analyticsNamespace?: string,
   analytics?: {
     [raisedEventName: string]: RenamedEvent | RaisedEventHandler,
   },
-  bindEventsToProps: {
+  bindEventsToProps?: {
     [eventName: string]: CallbackPropName,
   },
 }
 
-
-export default (WrappedComponent: ComponentType<Props>, createEventMap: CreateEventMap<Props> = {}) =>
-  class WithAnalytics extends Component<Props> {
+// Tried to get flow typing working but could not :O
+export default (createEventMap: CreateEventMap<*> = {}) => (WrappedComponent: ComponentType<*>): ComponentType<*> =>
+  class WithAnalytics extends Component<*> {
     static defaultProps = {
       analyticsNamespace: null,
       bindEventsToProps: {},
@@ -204,4 +204,4 @@ export default (WrappedComponent: ComponentType<Props>, createEventMap: CreateEv
         <WrappedComponent {...props} />
       );
     }
-  };
+  }

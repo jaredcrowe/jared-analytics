@@ -28,14 +28,14 @@ class Button extends Component<ButtonProps> {
   }
 }
 
-export default withAnalytics(Button, {
+export default withAnalytics({
   onClick: 'click',
-});
+})(Button);
 
-export const ButtonWithCreateEventCallback = withAnalytics(Button, {
+export const ButtonWithCreateEventCallback = withAnalytics({
   onClick: (createEvent, props) => createEvent('click', {
     createdWithCustomFn: true,
     myOwnNamespace: props.analyticsNamespace,
     allProps: props,
   })
-});
+})(Button);

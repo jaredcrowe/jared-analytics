@@ -12,4 +12,4 @@ class Namespace extends Component {
   }
 }
 
-export default withAnalytics(Namespace);
+export default withAnalytics()(Namespace);

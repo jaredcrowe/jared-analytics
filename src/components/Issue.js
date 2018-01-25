@@ -2,11 +2,11 @@
 
 import React, { Component } from 'react';
 
-import { AnalyticsBoundary, withAnalytics } from '../modules/analytics';
+import { AnalyticsBoundary } from '../modules/analytics';
 
 import UserSelect from './UserSelect';
 
-class Issue extends Component {
+export default class Issue extends Component<*> {
   state = {
     assignee: null,
     reporter: null,
@@ -67,5 +67,3 @@ class Issue extends Component {
     );
   }
 }
-
-export default withAnalytics(Issue);
