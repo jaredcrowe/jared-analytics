@@ -11,11 +11,13 @@ type RenamedEvent = string;
 type CallbackPropName = string;
 type RaisedEventHandler = (event: AnalyticsEvent, raise: RaiseAnalyticsEvent) => void;
 
+type CreateAnalyticsEvent = (name: string, payload?: {}) => AnalyticsEvent;
+
 export type withAnalyticsProps = {
-  createAnalyticsEvent: (name: string, payload: {}) => AnalyticsEvent,
+  createAnalyticsEvent: CreateAnalyticsEvent,
 }
 
-type Props = withAnalyticsProps & {
+type Props = {
   analyticsNamespace: string,
   analytics?: {
     [raisedEventName: string]: RenamedEvent | RaisedEventHandler,
@@ -25,8 +27,14 @@ type Props = withAnalyticsProps & {
   },
 }
 
-export default (WrappedComponent: ComponentType<Props>) =>
-  class WithAnalytics extends Component<$Diff<Props, withAnalyticsProps>> {
+type CreateEventMethod<T> = (createEvent: CreateAnalyticsEvent, props: T) => AnalyticsEvent;
+
+type CreateEventMap<T> = {
+  [propCallbackName: string]: string | CreateEventMethod<T>,
+}
+
+export default (WrappedComponent: ComponentType<Props>, createEventMap: CreateEventMap<Props> = {}) =>
+  class WithAnalytics extends Component<Props> {
     static defaultProps = {
       analyticsNamespace: null,
       bindEventsToProps: {},
@@ -118,16 +126,16 @@ export default (WrappedComponent: ComponentType<Props>) =>
     // to a callback prop. This means that whenever the event is raised we
     // should capture it and pass it as an extra argument to that callback prop,
     // rather than letting the consumer handle the event as normal.
-    bindEventsToProps = () => {
-      const bindEventsMap = this.props.bindEventsToProps;
+    bindEventsToProps = (props: Props) => {
+      const bindEventsMap = props.bindEventsToProps;
       if (!bindEventsMap) {
-        return this.props;
+        return props;
       }
 
-      return Object.keys(bindEventsMap)
+      const boundPropCallbacks = Object.keys(bindEventsMap)
         .reduce((bound, eventName) => {
           const propName = bindEventsMap[eventName];
-          const providedCallback = this.props[propName];
+          const providedCallback = props[propName];
           if (!providedCallback) {
             return bound;
           }
@@ -140,17 +148,56 @@ export default (WrappedComponent: ComponentType<Props>) =>
             [propName]: boundCallback,
           };
         }, {});
+      
+      return { ...props, ...boundPropCallbacks };
+    }
+
+    // Consumers can provide a map of callbacks to event creators to allow creating events
+    // within certain components.
+    mapCreateEventsToProps = (props: Props) => {
+      if (!createEventMap) {
+        return props;
+      }
+
+      const modifiedPropCallbacks = Object.keys(createEventMap)
+        .reduce((modified, propCallbackName) => {
+          const eventCreator = createEventMap[propCallbackName];
+          const providedCallback = props[propCallbackName];
+          if (!providedCallback) {
+            return modified;
+          }
+          const modifiedCallback = (...args) => {
+            if (typeof eventCreator === 'string') {
+              this.createAnalyticsEvent(eventCreator).raise();
+            } else if (typeof eventCreator === 'function') {
+              eventCreator(this.createAnalyticsEvent, props).raise();
+            } else {
+              console.error('Invalid event creator type passed to withAnalytics event map');
+            }
+            providedCallback(...args);
+          };
+          return {
+            ...modified,
+            [propCallbackName]: modifiedCallback,
+          };
+        }, {});
+
+      return { ...props, ...modifiedPropCallbacks };
     }
 
     render() {
+      const patchedProps = this.mapCreateEventsToProps(this.bindEventsToProps(this.props));
+
       const {
         analyticsNamespace,
+        analytics,
+        bindEventsToProps,
         ...permittedProps
-      } = this.props;
+      } = patchedProps;
 
       const props = {
         ...permittedProps,
-        ...this.bindEventsToProps(),
+        ...patchedProps,
         createAnalyticsEvent: this.createAnalyticsEvent,
       };
 

@@ -3,11 +3,15 @@
 import React, { Component } from 'react';
 
 import { withAnalytics } from '../analytics';
+import { type withAnalyticsProps } from '../analytics/withAnalytics';
 
-class Button extends Component<*> {
+type ButtonProps = {
+  onClick: (e: MouseEvent) => void,
+} & withAnalyticsProps;
+
+class Button extends Component<ButtonProps> {
   handleClick = e => {
     const { createAnalyticsEvent } = this.props;
-    createAnalyticsEvent('click').raise();
     createAnalyticsEvent(
       'atlaskit-button-click',
       { version: '1.0.0' }
@@ -24,4 +28,6 @@ class Button extends Component<*> {
   }
 }
 
-export default withAnalytics(Button);
+export default withAnalytics(Button, {
+  onClick: 'click',
+});
