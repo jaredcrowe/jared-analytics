@@ -10,8 +10,12 @@ const noop = (...args: any) => {};
 type RenamedEvent = string;
 type CallbackPropName = string;
 type RaisedEventHandler = (event: AnalyticsEvent, raise: RaiseAnalyticsEvent) => void;
-
 type CreateAnalyticsEvent = (name: string, payload?: {}) => AnalyticsEvent;
+
+type CreateEventMethod<T> = (createEvent: CreateAnalyticsEvent, props: T) => AnalyticsEvent;
+type CreateEventMap<T> = {
+  [propCallbackName: string]: string | CreateEventMethod<T>,
+}
 
 export type withAnalyticsProps = {
   createAnalyticsEvent: CreateAnalyticsEvent,
@@ -27,11 +31,6 @@ type Props = {
   },
 }
 
-type CreateEventMethod<T> = (createEvent: CreateAnalyticsEvent, props: T) => AnalyticsEvent;
-
-type CreateEventMap<T> = {
-  [propCallbackName: string]: string | CreateEventMethod<T>,
-}
 
 export default (WrappedComponent: ComponentType<Props>, createEventMap: CreateEventMap<Props> = {}) =>
   class WithAnalytics extends Component<Props> {
@@ -148,7 +147,7 @@ export default (WrappedComponent: ComponentType<Props>, createEventMap: CreateEv
             [propName]: boundCallback,
           };
         }, {});
-      
+
       return { ...props, ...boundPropCallbacks };
     }
 

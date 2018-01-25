@@ -31,3 +31,11 @@ class Button extends Component<ButtonProps> {
 export default withAnalytics(Button, {
   onClick: 'click',
 });
+
+export const ButtonWithCreateEventCallback = withAnalytics(Button, {
+  onClick: (createEvent, props) => createEvent('click', {
+    createdWithCustomFn: true,
+    myOwnNamespace: props.analyticsNamespace,
+    allProps: props,
+  })
+});

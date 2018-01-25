@@ -3,11 +3,12 @@
 import React, { Component } from 'react';
 
 import { withAnalytics } from '../modules/analytics';
-import Button from '../modules/button';
+import Button, { ButtonWithCreateEventCallback } from '../modules/button';
 import { type withAnalyticsProps } from '../modules/analytics/withAnalytics';
 
 type Props = withAnalyticsProps & {
   value: string,
+  useEventCallbackButton: boolean,
   onChange: (user: string) => void,
 };
 
@@ -16,6 +17,10 @@ type State = {
 }
 
 class UserSelect extends Component<Props, State> {
+  defaultProps = {
+    useEventCallbackButton: false,
+  }
+
   state = {
     isCheckboxChecked: false,
   }
@@ -44,15 +49,17 @@ class UserSelect extends Component<Props, State> {
   }
 
   render() {
-    const { value } = this.props;
+    const { value, useEventCallbackButton } = this.props;
     const USERS = ['Jed', 'Michael', 'Jared'];
+
+    const ButtonType = useEventCallbackButton ? ButtonWithCreateEventCallback : Button;
 
     return (
       <div>
         <p>Selected user: {value || 'none'}</p>
         <div>
           {USERS.map(name => (
-            <Button
+            <ButtonType
               analyticsNamespace="button"
               bindEventsToProps={{click: 'onClick' }}
               key={name}
@@ -60,7 +67,7 @@ class UserSelect extends Component<Props, State> {
                 this.handleClick(name, analyticsEvent)}
             >
               {name}
-            </Button>
+            </ButtonType>
           ))}
           <p>
             <label>

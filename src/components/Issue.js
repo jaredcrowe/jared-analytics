@@ -58,6 +58,7 @@ class Issue extends Component {
           <UserSelect
             analytics={{ select: 'reporter-change' }}
             analyticsNamespace="reporter-select"
+            useEventCallbackButton
             value={this.state.reporter}
             onChange={this.onReporterChange}
           />
