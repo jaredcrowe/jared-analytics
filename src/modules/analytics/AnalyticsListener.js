@@ -25,9 +25,7 @@ export default class AnalyticsListener extends Component<Props> {
   fireAnalyticsEvent: FireAnalyticsEvent = (event, channel) => {
     if (channel === this.props.channel) {
       this.props.onEvent(event);
-    }
-
-    if (this.context.fireAnalyticsEvent) {
+    } else if (this.context.fireAnalyticsEvent) {
       this.context.fireAnalyticsEvent(event, channel);
     }
   }
