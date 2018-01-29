@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { AnalyticsBoundary } from '../modules/analytics';
 
 import UserSelect from './UserSelect';
+import { ButtonFireOnly } from '../modules/button';
 
 export default class Issue extends Component<*> {
   state = {
@@ -63,6 +64,8 @@ export default class Issue extends Component<*> {
             onChange={this.onReporterChange}
           />
         </div>
+        <h3>Button that creates & fires straight away</h3>
+        <ButtonFireOnly onClick={() => 'a'} >Fire</ButtonFireOnly>
       </AnalyticsBoundary>
     );
   }

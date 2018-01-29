@@ -5,14 +5,14 @@ import PropTypes from 'prop-types';
 
 import AnalyticsEvent, { type RaiseAnalyticsEvent } from './AnalyticsEvent';
 
-const noop = (...args: any) => {};
+const noop = (...args: any) => undefined;
 
 type RenamedEvent = string;
 type CallbackPropName = string;
 type RaisedEventHandler = (event: AnalyticsEvent, raise: RaiseAnalyticsEvent) => void;
 type CreateAnalyticsEvent = (name: string, payload?: {}) => AnalyticsEvent;
 
-type CreateEventMethod<P> = (createEvent: CreateAnalyticsEvent, props: P) => AnalyticsEvent;
+type CreateEventMethod<P> = (createEvent: CreateAnalyticsEvent, props: P) => (AnalyticsEvent | void);
 type CreateEventMap<P> = {
   [propCallbackName: string]: string | CreateEventMethod<P>,
 }
@@ -21,7 +21,7 @@ export type InternalAnalyticsProps = {
   createAnalyticsEvent: CreateAnalyticsEvent,
 }
 
-type ExternalAnalyticsProps = {
+export type ExternalAnalyticsProps = {
   analyticsNamespace?: string,
   analytics?: {
     [raisedEventName: string]: RenamedEvent | RaisedEventHandler,
@@ -170,7 +170,8 @@ export default <Props: ExternalAnalyticsProps>
               if (typeof eventCreator === 'string') {
                 this.createAnalyticsEvent(eventCreator).raise();
               } else if (typeof eventCreator === 'function') {
-                eventCreator(this.createAnalyticsEvent, props).raise();
+                const event = eventCreator(this.createAnalyticsEvent, props);
+                if (event) event.raise();
               } else {
                 console.error('Invalid event creator type passed to withAnalytics event map');
               }
@@ -197,7 +198,6 @@ export default <Props: ExternalAnalyticsProps>
 
         const props = {
           ...permittedProps,
-          ...patchedProps,
           createAnalyticsEvent: this.createAnalyticsEvent,
         };
 

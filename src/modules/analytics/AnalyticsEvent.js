@@ -1,9 +1,8 @@
 // @flow
 
-export type noop = (...args: any) => {};
-export type FireAnalyticsEvent = (event: AnalyticsEvent, channel: string) => void | noop;
+export type FireAnalyticsEvent = (event: AnalyticsEvent, channel?: string) => void;
 export type RaiseAnalyticsEvent = (event: AnalyticsEvent) => void;
-export type EventEnhancer = (payload: {}) => {} | {};
+export type EventEnhancer = ((payload: {}) => {}) | {};
 
 export default class AnalyticsEvent {
   name: string;
@@ -41,13 +40,11 @@ export default class AnalyticsEvent {
     return this;
   }
 
-  fire = (channel: string) => {
+  fire = (channel?: string) => {
     this.fireCallback(this, channel);
-    return this;
   }
 
   raise = () => {
     this.raiseCallback(this);
-    return this;
   }
 }

@@ -3,11 +3,11 @@
 import React, { Component } from 'react';
 
 import { withAnalytics } from '../analytics';
-import { type withAnalyticsProps } from '../analytics/withAnalytics';
+import { type InternalAnalyticsProps } from '../analytics/withAnalytics';
 
 type ButtonProps = {
   onClick: (e: MouseEvent) => void,
-} & withAnalyticsProps;
+} & InternalAnalyticsProps;
 
 class Button extends Component<ButtonProps> {
   handleClick = e => {
@@ -38,4 +38,8 @@ export const ButtonWithCreateEventCallback = withAnalytics({
     myOwnNamespace: props.analyticsNamespace,
     allProps: props,
   })
+})(Button);
+
+export const ButtonFireOnly = withAnalytics({
+  onClick: (createEvent) => createEvent('click').fire(),
 })(Button);
