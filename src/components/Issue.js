@@ -2,11 +2,12 @@
 
 import React, { Component } from 'react';
 
-import { AnalyticsBoundary, withAnalytics } from '../modules/analytics';
+import { AnalyticsBoundary } from '../modules/analytics';
 
 import UserSelect from './UserSelect';
+import { ButtonFireOnly } from '../modules/button';
 
-class Issue extends Component {
+export default class Issue extends Component<*> {
   state = {
     assignee: null,
     reporter: null,
@@ -58,13 +59,14 @@ class Issue extends Component {
           <UserSelect
             analytics={{ select: 'reporter-change' }}
             analyticsNamespace="reporter-select"
+            useEventCallbackButton
             value={this.state.reporter}
             onChange={this.onReporterChange}
           />
         </div>
+        <h3>Button that creates & fires straight away</h3>
+        <ButtonFireOnly onClick={() => 'a'} >Fire</ButtonFireOnly>
       </AnalyticsBoundary>
     );
   }
 }
-
-export default withAnalytics(Issue);

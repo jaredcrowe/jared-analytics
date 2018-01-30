@@ -3,11 +3,24 @@
 import React, { Component } from 'react';
 
 import { withAnalytics } from '../modules/analytics';
-import Button from '../modules/button';
+import Button, { ButtonWithCreateEventCallback } from '../modules/button';
+import Checkbox from '../modules/checkbox';
 
-const BoundButton = withAnalytics(Button, { click: 'onClick' });
+type Props = {
+  value: string,
+  useEventCallbackButton?: boolean,
+  onChange: (user: string) => void,
+};
 
-class UserSelect extends Component {
+type State = {
+  isCheckboxChecked: boolean,
+}
+
+class UserSelect extends Component<Props, State> {
+  defaultProps = {
+    useEventCallbackButton: false,
+  }
+
   state = {
     isCheckboxChecked: false,
   }
@@ -28,35 +41,33 @@ class UserSelect extends Component {
   onCheckboxChange = () => {
     const isCheckboxChecked = !this.state.isCheckboxChecked;
     this.setState({ isCheckboxChecked });
-
-    this.props.createAnalyticsEvent(
-      'checkbox-change',
-      { checked: isCheckboxChecked }
-    ).raise();
   }
 
   render() {
-    const { value } = this.props;
+    const { value, useEventCallbackButton } = this.props;
     const USERS = ['Jed', 'Michael', 'Jared'];
+
+    const ButtonType = useEventCallbackButton ? ButtonWithCreateEventCallback : Button;
 
     return (
       <div>
         <p>Selected user: {value || 'none'}</p>
         <div>
           {USERS.map(name => (
-            <BoundButton
+            <ButtonType
               analyticsNamespace="button"
+              bindEventsToProps={{click: 'onClick' }}
               key={name}
               onClick={(event, analyticsEvent) =>
                 this.handleClick(name, analyticsEvent)}
             >
               {name}
-            </BoundButton>
+            </ButtonType>
           ))}
           <p>
             <label>
-              <input
-                type="checkbox"
+              <Checkbox
+                analytics={{ checked: 'checkbox-change' }}
                 onChange={this.onCheckboxChange}
                 checked={this.state.isCheckboxChecked}
               />
@@ -69,4 +80,4 @@ class UserSelect extends Component {
   }
 }
 
-export default withAnalytics(UserSelect);
+export default withAnalytics()(UserSelect);

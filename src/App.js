@@ -9,19 +9,21 @@ import { PageBoundary } from './components/analytics';
 class App extends Component {
   render() {
     return (
-      <AnalyticsListener
-        channel="atlaskit"
-        onEvent={event => console.log('Received Atlaskit event:', event)}
-      >
+      <AnalyticsListener onEvent={event => console.log('Received event:', event)}>
         <AnalyticsListener
-          channel="jira"
-          onEvent={event => console.log('Received Jira event:', event)}
+          channel="atlaskit"
+          onEvent={event => console.log('Received Atlaskit event:', event)}
         >
-          <PageBoundary analyticsNamespace="backlog">
-            <div style={{ padding: '40px' }}>
-              <Issue analyticsNamespace="issue" issueId={123} />
-            </div>
-          </PageBoundary>
+          <AnalyticsListener
+            channel="jira"
+            onEvent={event => console.log('Received Jira event:', event)}
+          >
+            <PageBoundary analyticsNamespace="backlog">
+              <div style={{ padding: '40px' }}>
+                <Issue analyticsNamespace="issue" issueId={123} />
+              </div>
+            </PageBoundary>
+          </AnalyticsListener>
         </AnalyticsListener>
       </AnalyticsListener>
     );

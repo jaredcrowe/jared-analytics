@@ -3,7 +3,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-export default class AnalyticsBoundary extends Component {
+export default class AnalyticsBoundary extends Component<*> {
   static childContextTypes = {
     raiseAnalyticsEvent: PropTypes.func,
   }

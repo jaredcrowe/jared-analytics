@@ -15,4 +15,4 @@ class ViewTracker extends Component {
   render() { return null; }
 }
 
-export default withAnalytics(ViewTracker);
+export default withAnalytics()(ViewTracker);
