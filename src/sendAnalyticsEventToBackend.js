@@ -9,16 +9,27 @@ const mergeContext = context => {
 };
 
 export default (event: UIAnalyticsEvent) => {
-  const context = mergeContext(event.context);
-  const { source, namespace: actionSubject, ...contextAttributes } = context;
+  // Event was created with UI context
+  if (event.context) {
+    const context = mergeContext(event.context);
+    const { source, namespace: actionSubject, ...contextAttributes } = context;
 
-  const attributes = { ...contextAttributes, ...event.payload };
+    const attributes = { ...contextAttributes, ...event.payload };
 
+    const toClient = {
+      action: event.action,
+      actionSubject,
+      attributes,
+      source,
+    };
+    console.log('RECEIVED UI EVENT:', event, 'SENDING TO CLIENT:', toClient);
+    return;
+  }
+
+  // Event was created outside the UI
   const toClient = {
     action: event.action,
-    actionSubject,
-    attributes,
-    source,
+    attributes: event.payload,
   };
-  console.log('RECEIVED EVENT:', event, 'SENDING TO CLIENT:', toClient);
+  console.log('RECEIVED GENERIC EVENT:', event, 'SENDING TO CLIENT:', toClient);
 };
