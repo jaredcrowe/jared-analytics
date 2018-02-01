@@ -2,71 +2,64 @@
 
 import React, { Component } from 'react';
 
-import { AnalyticsBoundary } from '../modules/analytics';
+import { AnalyticsContext, UIAnalyticsEvent } from '../modules/analytics';
 
 import UserSelect from './UserSelect';
-import { ButtonFireOnly } from '../modules/button';
 
-export default class Issue extends Component<*> {
+type Props = {
+  issueId: number,
+};
+
+type State = {
+  assignee: ?string,
+  reporter: ?string,
+};
+
+export default class Issue extends Component<Props, State> {
   state = {
     assignee: null,
     reporter: null,
-  }
+  };
 
-  onAssigneeChange = (user: string) => {
+  onAssigneeChange = (user: string, analyticsEvent: UIAnalyticsEvent) => {
     this.setState({ assignee: user });
-  }
+    this.onEvent(analyticsEvent, 'assignee');
+  };
 
-  onReporterChange = (user: string) => {
+  onReporterChange = (user: string, analyticsEvent: UIAnalyticsEvent) => {
     this.setState({ reporter: user });
-  }
+    this.onEvent(analyticsEvent, 'reporter');
+  };
 
-  onEvent = event => {
+  onEvent = (event: UIAnalyticsEvent, field: string) => {
     const { issueId } = this.props;
-    switch (event.name) {
-      case 'assignee-change':
-        event
-          .rename('jira-issue-updated')
-          .enhance({ field: 'assignee', issueId })
-          .fire('jira');
-        break;
-      case 'reporter-change':
-        event
-          .rename('jira-issue-updated')
-          .enhance({ field: 'reporter', issueId })
-          .fire('jira');
-        break;
-      default:
-        event.fire('jira');
-        break;
-    }
-  }
+    event.enhance({ field, issueId }).fire('jira');
+  };
 
   render() {
+    const { issueId } = this.props;
     return (
-      <AnalyticsBoundary onEvent={this.onEvent}>
-        <h3>Assignee:</h3>
+      <AnalyticsContext data={{ issueId, namespace: 'issue' }}>
         <div>
-          <UserSelect
-            analytics={{ select: 'assignee-change' }}
-            analyticsNamespace="assignee-select"
-            value={this.state.assignee}
-            onChange={this.onAssigneeChange}
-          />
+          <h3>Assignee:</h3>
+          <div>
+            <UserSelect
+              // NOTE: We're overwriting this UserSelect's default context here
+              analyticsContext={{ namespace: 'assignee-select' }}
+              value={this.state.assignee}
+              onChange={this.onAssigneeChange}
+            />
+          </div>
+          <h3>Reporter:</h3>
+          <div>
+            <UserSelect
+              // Down here we're letting it default to { namespace: 'user-select' }
+              value={this.state.reporter}
+              onChange={this.onReporterChange}
+            />
+          </div>
         </div>
-        <h3>Reporter:</h3>
-        <div>
-          <UserSelect
-            analytics={{ select: 'reporter-change' }}
-            analyticsNamespace="reporter-select"
-            useEventCallbackButton
-            value={this.state.reporter}
-            onChange={this.onReporterChange}
-          />
-        </div>
-        <h3>Button that creates & fires straight away</h3>
-        <ButtonFireOnly onClick={() => 'a'} >Fire</ButtonFireOnly>
-      </AnalyticsBoundary>
+      </AnalyticsContext>
     );
   }
 }

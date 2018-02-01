@@ -1,36 +1,37 @@
 // @flow
 
-import { Component, type Node } from 'react';
+import React, { Component, type Node } from 'react';
 import PropTypes from 'prop-types';
-import AnalyticsEvent, { type FireAnalyticsEvent } from './AnalyticsEvent';
+import { UIAnalyticsEvent } from './';
+import type { FireUIAnalyticsEventSignature } from './types';
 
 type Props = {
   children?: Node,
-  channel: string,
-  onEvent: (event: AnalyticsEvent) => void,
-}
+  channel?: string,
+  onEvent: (event: UIAnalyticsEvent) => void,
+};
 
 const ContextTypes = {
   fireAnalyticsEvent: PropTypes.func,
 };
 
-export default class AnalyticsListener extends Component<Props> {
-  static contextTypes = ContextTypes
-  static childContextTypes = ContextTypes
+export default class AnalyticsListener extends Component<Props, void> {
+  static contextTypes = ContextTypes;
+  static childContextTypes = ContextTypes;
 
   getChildContext = () => ({
     fireAnalyticsEvent: this.fireAnalyticsEvent,
-  })
+  });
 
-  fireAnalyticsEvent: FireAnalyticsEvent = (event, channel) => {
+  fireAnalyticsEvent: FireUIAnalyticsEventSignature = (event, channel) => {
     if (channel === this.props.channel) {
       this.props.onEvent(event);
     } else if (this.context.fireAnalyticsEvent) {
       this.context.fireAnalyticsEvent(event, channel);
     }
-  }
+  };
 
   render() {
-    return this.props.children;
+    return <div>{this.props.children}</div>;
   }
 }

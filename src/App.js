@@ -1,28 +1,36 @@
+// @flow
+/* eslint-disable no-console */
+
 import React, { Component } from 'react';
-import '@atlaskit/css-reset';
+import '@atlaskit/css-reset'; // eslint-disable-line import/extensions
 
-import { AnalyticsListener } from './modules/analytics';
+import { AnalyticsContext, AnalyticsListener } from './modules/analytics';
 
+import sendAnalyticsEventToBackend from './sendAnalyticsEventToBackend';
+import FetchData from './components/FetchData';
 import Issue from './components/Issue';
-import { PageBoundary } from './components/analytics';
 
-class App extends Component {
+class App extends Component<void> {
   render() {
     return (
-      <AnalyticsListener onEvent={event => console.log('Received event:', event)}>
+      <AnalyticsListener onEvent={sendAnalyticsEventToBackend}>
         <AnalyticsListener
           channel="atlaskit"
-          onEvent={event => console.log('Received Atlaskit event:', event)}
+          onEvent={sendAnalyticsEventToBackend}
         >
           <AnalyticsListener
             channel="jira"
-            onEvent={event => console.log('Received Jira event:', event)}
+            onEvent={sendAnalyticsEventToBackend}
           >
-            <PageBoundary analyticsNamespace="backlog">
+            <AnalyticsContext data={{ source: 'backlog', namespace: 'jira' }}>
               <div style={{ padding: '40px' }}>
-                <Issue analyticsNamespace="issue" issueId={123} />
+                <Issue
+                  // analyticsNamespace="issue"
+                  issueId={123}
+                />
+                <FetchData />
               </div>
-            </PageBoundary>
+            </AnalyticsContext>
           </AnalyticsListener>
         </AnalyticsListener>
       </AnalyticsListener>
