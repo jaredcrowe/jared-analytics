@@ -41,6 +41,7 @@ export type UIAnalyticsEventProps = AnalyticsEventProps & {
 export interface UIAnalyticsEventInterface extends AnalyticsEventInterface {
   context: Array<ObjectType>;
   handlers?: Array<UIAnalyticsEventHandlerSignature>;
+  hasFired: boolean;
 
   fire(channel?: ChannelIdentifier): void;
 }
