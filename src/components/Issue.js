@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 
 import { AnalyticsContext, UIAnalyticsEvent } from '../modules/analytics';
+import Button from '../modules/button';
 
 import UserSelect from './UserSelect';
 
@@ -15,10 +16,23 @@ type State = {
   reporter: ?string,
 };
 
+const mockReduxAddCommentAction = async analyticsEvent => {
+  const commentId = await new Promise(resolve =>
+    window.setTimeout(() => resolve(Math.round(Math.random() * 1000)), 1000),
+  );
+  analyticsEvent.update({ commentId }).fire('jira');
+};
+
 export default class Issue extends Component<Props, State> {
   state = {
     assignee: null,
     reporter: null,
+  };
+
+  addComment = (e: Event, analyticsEvent: UIAnalyticsEvent) => {
+    const pessimisticAnalyticsEvent = analyticsEvent.clone();
+    analyticsEvent.fire('jira');
+    mockReduxAddCommentAction(pessimisticAnalyticsEvent);
   };
 
   onAssigneeChange = (user: string, analyticsEvent: UIAnalyticsEvent) => {
@@ -58,6 +72,19 @@ export default class Issue extends Component<Props, State> {
               onChange={this.onReporterChange}
             />
           </div>
+          <h3>Add comment</h3>
+          <p>
+            This is a mock Add comment button that demonstrates how we can
+            optimistically fire an event as soon as an action is taken, then
+            pessimistically fire another event with more data once it has
+            succeeded.
+          </p>
+          <Button
+            analyticsContext={{ namespace: 'add-comment-button' }}
+            onClick={this.addComment}
+          >
+            Add comment
+          </Button>
         </div>
       </AnalyticsContext>
     );

@@ -13,21 +13,17 @@ type Props = WithCreateAnalyticsEventProps & {
 };
 
 class Button extends Component<Props, void> {
-  handleClick = e => {
-    const { createAnalyticsEvent } = this.props;
-    createAnalyticsEvent('click', { version: '1.0.0' }).fire('atlaskit');
-
-    if (this.props.onClick) {
-      this.props.onClick(e);
-    }
-  };
-
   render() {
     const { createAnalyticsEvent, ...props } = this.props;
-    return <button {...props} onClick={this.handleClick} />;
+    return <button {...props} />;
   }
 }
 
 export default withAnalyticsContext({ namespace: 'button' })(
-  withCreateAnalyticsEvent({ onClick: 'click' })(Button),
+  withCreateAnalyticsEvent({
+    onClick: createEvent => {
+      createEvent('click', { version: '1.0.0' }).fire('atlaskit');
+      return createEvent('click');
+    },
+  })(Button),
 );

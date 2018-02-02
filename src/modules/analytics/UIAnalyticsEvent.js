@@ -1,5 +1,7 @@
 // @flow
 
+import cloneDeep from 'clone-deep';
+
 import AnalyticsEvent from './AnalyticsEvent';
 import type {
   AnalyticsEventUpdater,
@@ -11,11 +13,7 @@ import type {
 
 const noop = () => {};
 
-const sendHasFiredWarning = () =>
-  // eslint-disable-next-line no-console
-  console.warn(
-    "This event has already been fired. It's not possible to fire the same event twice.",
-  );
+const { warn } = console;
 
 export default class UIAnalyticsEvent extends AnalyticsEvent
   implements UIAnalyticsEventInterface {
@@ -30,9 +28,21 @@ export default class UIAnalyticsEvent extends AnalyticsEvent
     this.hasFired = false;
   }
 
+  clone = (): UIAnalyticsEvent | null => {
+    if (this.hasFired) {
+      warn("Cannot clone an event after it's been fired.");
+      return null;
+    }
+    const action = this.action;
+    const context = [...this.context];
+    const handlers = [...this.handlers];
+    const payload = cloneDeep(this.payload);
+    return new UIAnalyticsEvent({ action, context, handlers, payload });
+  };
+
   fire = (channel?: string) => {
     if (this.hasFired) {
-      sendHasFiredWarning();
+      warn('Cannot fire an event twice.');
       return;
     }
     this.handlers.forEach(handler => {
@@ -43,7 +53,7 @@ export default class UIAnalyticsEvent extends AnalyticsEvent
 
   update(updater: AnalyticsEventUpdater): this {
     if (this.hasFired) {
-      sendHasFiredWarning();
+      warn("Cannot update an event after it's been fired.");
       return this;
     }
     return super.update(updater);

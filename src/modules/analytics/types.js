@@ -22,6 +22,7 @@ export interface AnalyticsEventInterface {
   action: string;
   payload: AnalyticsEventPayload;
 
+  clone: () => AnalyticsEvent;
   update(updater: AnalyticsEventUpdater): AnalyticsEvent;
 }
 
@@ -38,10 +39,14 @@ export type UIAnalyticsEventProps = AnalyticsEventProps & {
   handlers?: Array<UIAnalyticsEventHandlerSignature>,
 };
 
-export interface UIAnalyticsEventInterface extends AnalyticsEventInterface {
+export interface UIAnalyticsEventInterface {
+  action: string;
   context: Array<ObjectType>;
   handlers?: Array<UIAnalyticsEventHandlerSignature>;
   hasFired: boolean;
+  payload: AnalyticsEventPayload;
 
+  clone: () => UIAnalyticsEvent | null;
   fire(channel?: ChannelIdentifier): void;
+  update(updater: AnalyticsEventUpdater): AnalyticsEvent;
 }
