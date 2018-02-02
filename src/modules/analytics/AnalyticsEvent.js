@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  AnalyticsEventEnhancer,
+  AnalyticsEventUpdater,
   AnalyticsEventInterface,
   AnalyticsEventProps,
 } from './types';
@@ -15,16 +15,13 @@ export default class AnalyticsEvent implements AnalyticsEventInterface {
     this.payload = props.payload;
   }
 
-  enhance(enhancer: AnalyticsEventEnhancer): this {
-    if (typeof enhancer === 'function') {
-      this.payload = enhancer(this.payload);
-    }
-
-    // TODO: implement a smarter merge
-    if (typeof enhancer === 'object') {
+  update(updater: AnalyticsEventUpdater): this {
+    if (typeof updater === 'function') {
+      this.payload = updater(this.payload);
+    } else if (typeof updater === 'object') {
       this.payload = {
         ...this.payload,
-        ...enhancer,
+        ...updater,
       };
     }
 

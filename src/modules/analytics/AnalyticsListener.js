@@ -3,16 +3,16 @@
 import React, { Component, type Node } from 'react';
 import PropTypes from 'prop-types';
 import { UIAnalyticsEvent } from './';
-import type { FireUIAnalyticsEventSignature } from './types';
+import type { UIAnalyticsEventHandlerSignature } from './types';
 
 type Props = {
   children?: Node,
   channel?: string,
-  onEvent: (event: UIAnalyticsEvent) => void,
+  onEvent: (event: UIAnalyticsEvent, channel?: string) => void,
 };
 
 const ContextTypes = {
-  fireAnalyticsEvent: PropTypes.func,
+  getAnalyticsEventHandlers: PropTypes.func,
 };
 
 export default class AnalyticsListener extends Component<Props, void> {
@@ -20,15 +20,22 @@ export default class AnalyticsListener extends Component<Props, void> {
   static childContextTypes = ContextTypes;
 
   getChildContext = () => ({
-    fireAnalyticsEvent: this.fireAnalyticsEvent,
+    getAnalyticsEventHandlers: this.getAnalyticsEventHandlers,
   });
 
-  fireAnalyticsEvent: FireUIAnalyticsEventSignature = (event, channel) => {
-    if (channel === this.props.channel) {
-      this.props.onEvent(event);
-    } else if (this.context.fireAnalyticsEvent) {
-      this.context.fireAnalyticsEvent(event, channel);
-    }
+  getAnalyticsEventHandlers = () => {
+    const { channel, onEvent } = this.props;
+    const { getAnalyticsEventHandlers } = this.context;
+    const parentEventHandlers =
+      (typeof getAnalyticsEventHandlers === 'function' &&
+        getAnalyticsEventHandlers()) ||
+      [];
+    const handler: UIAnalyticsEventHandlerSignature = (event, eventChannel) => {
+      if (channel === '*' || channel === eventChannel) {
+        onEvent(event, eventChannel);
+      }
+    };
+    return [handler, ...parentEventHandlers];
   };
 
   render() {

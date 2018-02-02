@@ -9,7 +9,7 @@ export type ObjectType = { [string]: any };
 // Basic events
 export type AnalyticsEventPayload = ObjectType;
 
-export type AnalyticsEventEnhancer =
+export type AnalyticsEventUpdater =
   | AnalyticsEventPayload
   | ((payload: AnalyticsEventPayload) => AnalyticsEventPayload);
 
@@ -22,25 +22,25 @@ export interface AnalyticsEventInterface {
   action: string;
   payload: AnalyticsEventPayload;
 
-  enhance(enhancer: AnalyticsEventEnhancer): AnalyticsEvent;
+  update(updater: AnalyticsEventUpdater): AnalyticsEvent;
 }
 
 // UI events
 type ChannelIdentifier = string;
 
-export type FireUIAnalyticsEventSignature = (
+export type UIAnalyticsEventHandlerSignature = (
   event: UIAnalyticsEvent,
   channel?: ChannelIdentifier,
 ) => void;
 
 export type UIAnalyticsEventProps = AnalyticsEventProps & {
   context: Array<ObjectType>,
-  fireCallback?: FireUIAnalyticsEventSignature,
+  handlers?: Array<UIAnalyticsEventHandlerSignature>,
 };
 
 export interface UIAnalyticsEventInterface extends AnalyticsEventInterface {
   context: Array<ObjectType>;
-  fireCallback?: FireUIAnalyticsEventSignature;
+  handlers?: Array<UIAnalyticsEventHandlerSignature>;
 
   fire(channel?: ChannelIdentifier): void;
 }

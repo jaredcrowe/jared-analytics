@@ -30,7 +30,7 @@ export default function withCreateAnalyticsEvent<ProvidedProps: ObjectType>(
   return (WrappedComponent: ComponentType<ProvidedProps>) =>
     class WithCreateAnalyticsEvent extends Component<ProvidedProps> {
       static contextTypes = {
-        fireAnalyticsEvent: PropTypes.func,
+        getAnalyticsEventHandlers: PropTypes.func,
         getAnalyticsContext: PropTypes.func,
       };
 
@@ -38,12 +38,10 @@ export default function withCreateAnalyticsEvent<ProvidedProps: ObjectType>(
         action: string,
         payload?: ObjectType = {},
       ): UIAnalyticsEvent => {
-        const {
-          fireAnalyticsEvent: fireCallback,
-          getAnalyticsContext,
-        } = this.context;
+        const { getAnalyticsEventHandlers, getAnalyticsContext } = this.context;
         const context = getAnalyticsContext() || [];
-        return new UIAnalyticsEvent({ action, context, payload, fireCallback });
+        const handlers = getAnalyticsEventHandlers();
+        return new UIAnalyticsEvent({ action, context, payload, handlers });
       };
 
       mapCreateEventsToProps = () => {

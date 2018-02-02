@@ -25,7 +25,7 @@ class UserSelect extends Component<Props, State> {
 
   handleClick = (selectedUser: string, analyticsEvent: UIAnalyticsEvent) => {
     if (selectedUser !== this.props.value) {
-      analyticsEvent.enhance({ value: selectedUser });
+      analyticsEvent.update({ value: selectedUser });
       this.props.onChange(selectedUser, analyticsEvent);
     }
   };

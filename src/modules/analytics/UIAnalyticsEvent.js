@@ -2,7 +2,7 @@
 
 import AnalyticsEvent from './AnalyticsEvent';
 import type {
-  FireUIAnalyticsEventSignature,
+  UIAnalyticsEventHandlerSignature,
   ObjectType,
   UIAnalyticsEventInterface,
   UIAnalyticsEventProps,
@@ -13,15 +13,17 @@ const noop = () => {};
 export default class UIAnalyticsEvent extends AnalyticsEvent
   implements UIAnalyticsEventInterface {
   context: Array<ObjectType>;
-  fireCallback: FireUIAnalyticsEventSignature;
+  handlers: Array<UIAnalyticsEventHandlerSignature>;
 
   constructor(props: UIAnalyticsEventProps) {
     super(props);
     this.context = props.context || [];
-    this.fireCallback = props.fireCallback || noop;
+    this.handlers = props.handlers || [noop];
   }
 
-  fire(channel?: string) {
-    this.fireCallback(this, channel);
-  }
+  fire = (channel?: string) => {
+    this.handlers.forEach(handler => {
+      handler(this, channel);
+    });
+  };
 }

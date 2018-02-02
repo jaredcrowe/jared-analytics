@@ -24,10 +24,7 @@ class App extends Component<void> {
           >
             <AnalyticsContext data={{ source: 'backlog', namespace: 'jira' }}>
               <div style={{ padding: '40px' }}>
-                <Issue
-                  // analyticsNamespace="issue"
-                  issueId={123}
-                />
+                <Issue issueId={123} />
                 <FetchData />
               </div>
             </AnalyticsContext>

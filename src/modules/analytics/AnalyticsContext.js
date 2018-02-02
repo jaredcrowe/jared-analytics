@@ -25,9 +25,9 @@ export default class AnalyticsContext extends Component<Props> {
 
   getAnalyticsContext = () => {
     const { data } = this.props;
+    const { getAnalyticsContext } = this.context;
     const ancestorData =
-      (typeof this.context.getAnalyticsContext === 'function' &&
-        this.context.getAnalyticsContext()) ||
+      (typeof getAnalyticsContext === 'function' && getAnalyticsContext()) ||
       [];
     return [...ancestorData, data];
   };

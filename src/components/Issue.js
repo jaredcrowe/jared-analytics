@@ -33,7 +33,7 @@ export default class Issue extends Component<Props, State> {
 
   onEvent = (event: UIAnalyticsEvent, field: string) => {
     const { issueId } = this.props;
-    event.enhance({ field, issueId }).fire('jira');
+    event.update({ field, issueId }).fire('jira');
   };
 
   render() {
