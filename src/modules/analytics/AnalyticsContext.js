@@ -1,6 +1,6 @@
 // @flow
 
-import { Children, Component, type Node } from 'react';
+import { Component, type Node } from 'react';
 import PropTypes from 'prop-types';
 
 import type { ObjectType } from './types';
@@ -33,6 +33,6 @@ export default class AnalyticsContext extends Component<Props> {
   };
 
   render() {
-    return Children.only(this.props.children);
+    return this.props.children;
   }
 }
