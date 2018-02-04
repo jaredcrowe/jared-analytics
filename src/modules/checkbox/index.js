@@ -1,15 +1,21 @@
 // @flow
 
 import React from 'react';
-import { withAnalytics } from '../analytics';
+import {
+  withCreateAnalyticsEvent,
+  type WithCreateAnalyticsEventProps,
+} from '../analytics';
 
-type Props = {
+type Props = WithCreateAnalyticsEventProps & {
   checked: boolean,
   onChange: (e: MouseEvent) => void,
 };
 
-const Input = ({ ...props }: Props ) => (<input type="checkbox" {...props} />);
+const Input = ({ createAnalyticsEvent, ...props }: Props) => (
+  <input type="checkbox" {...props} />
+);
 
-export default withAnalytics({
-  onChange: (createEvent, props) => createEvent('change', { checked: !props.checked }),
+export default withCreateAnalyticsEvent({
+  onChange: (createEvent, props) =>
+    createEvent('change', { checked: !props.checked }),
 })(Input);

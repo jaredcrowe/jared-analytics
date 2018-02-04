@@ -2,82 +2,56 @@
 
 import React, { Component } from 'react';
 
-import { withAnalytics } from '../modules/analytics';
-import Button, { ButtonWithCreateEventCallback } from '../modules/button';
-import Checkbox from '../modules/checkbox';
+import { withAnalyticsContext, UIAnalyticsEvent } from '../modules/analytics';
+import Button from '../modules/button';
 
 type Props = {
-  value: string,
-  useEventCallbackButton?: boolean,
-  onChange: (user: string) => void,
+  value: ?string,
+  onChange: (user: string, analyticsEvent: UIAnalyticsEvent) => void,
 };
 
 type State = {
   isCheckboxChecked: boolean,
-}
+};
 
 class UserSelect extends Component<Props, State> {
-  defaultProps = {
+  static defaultProps = {
     useEventCallbackButton: false,
-  }
+  };
 
   state = {
     isCheckboxChecked: false,
-  }
+  };
 
-  handleClick = (selectedUser, analyticsEvent) => {
+  handleClick = (selectedUser: string, analyticsEvent: UIAnalyticsEvent) => {
     if (selectedUser !== this.props.value) {
-      this.props.onChange(selectedUser);
-
-      if (analyticsEvent) {
-        analyticsEvent
-          .rename('select')
-          .enhance(payload => ({ ...payload, value: selectedUser }))
-          .raise();
-      }
+      analyticsEvent.update({ value: selectedUser });
+      this.props.onChange(selectedUser, analyticsEvent);
     }
-  }
-
-  onCheckboxChange = () => {
-    const isCheckboxChecked = !this.state.isCheckboxChecked;
-    this.setState({ isCheckboxChecked });
-  }
+  };
 
   render() {
-    const { value, useEventCallbackButton } = this.props;
+    const { value } = this.props;
     const USERS = ['Jed', 'Michael', 'Jared'];
-
-    const ButtonType = useEventCallbackButton ? ButtonWithCreateEventCallback : Button;
 
     return (
       <div>
         <p>Selected user: {value || 'none'}</p>
         <div>
           {USERS.map(name => (
-            <ButtonType
-              analyticsNamespace="button"
-              bindEventsToProps={{click: 'onClick' }}
+            <Button
               key={name}
               onClick={(event, analyticsEvent) =>
-                this.handleClick(name, analyticsEvent)}
+                this.handleClick(name, analyticsEvent)
+              }
             >
               {name}
-            </ButtonType>
+            </Button>
           ))}
-          <p>
-            <label>
-              <Checkbox
-                analytics={{ checked: 'checkbox-change' }}
-                onChange={this.onCheckboxChange}
-                checked={this.state.isCheckboxChecked}
-              />
-              Here is a deeply nested checkbox which will emit an event that is caught by the Issue component.
-            </label>
-          </p>
         </div>
       </div>
     );
   }
 }
 
-export default withAnalytics()(UserSelect);
+export default withAnalyticsContext({ namespace: 'user-select' })(UserSelect);

@@ -1,50 +1,38 @@
 // @flow
 
-export type FireAnalyticsEvent = (event: AnalyticsEvent, channel?: string) => void;
-export type RaiseAnalyticsEvent = (event: AnalyticsEvent) => void;
-export type EventEnhancer = ((payload: {}) => {}) | {};
+import cloneDeep from 'clone-deep';
 
-export default class AnalyticsEvent {
-  name: string;
+import type {
+  AnalyticsEventUpdater,
+  AnalyticsEventInterface,
+  AnalyticsEventProps,
+} from './types';
+
+export default class AnalyticsEvent implements AnalyticsEventInterface {
+  action: string;
   payload: {};
-  meta: {};
-  fireCallback: FireAnalyticsEvent;
-  raiseCallback: RaiseAnalyticsEvent;
 
-  constructor(name: string, payload: {}, meta: {}, { fire: fireCallback, raise: raiseCallback }: { fire: FireAnalyticsEvent, raise: RaiseAnalyticsEvent}) {
-    this.name = name;
-    this.payload = payload;
-    this.meta = meta;
-    this.fireCallback = fireCallback;
-    this.raiseCallback = raiseCallback;
+  constructor(props: AnalyticsEventProps) {
+    this.action = props.action;
+    this.payload = props.payload;
   }
 
-  rename = (name: string) => {
-    this.name = name;
-    return this;
-  }
+  clone = (): AnalyticsEvent => {
+    const action = this.action;
+    const payload = cloneDeep(this.payload);
+    return new AnalyticsEvent({ action, payload });
+  };
 
-  enhance = (enhancer: EventEnhancer) => {
-    if (typeof enhancer === 'function') {
-      this.payload = enhancer(this.payload);
-    }
-
-    // TODO: implement a smarter merge
-    if (typeof enhancer === 'object') {
+  update(updater: AnalyticsEventUpdater): this {
+    if (typeof updater === 'function') {
+      this.payload = updater(this.payload);
+    } else if (typeof updater === 'object') {
       this.payload = {
         ...this.payload,
-        ...enhancer,
+        ...updater,
       };
     }
 
     return this;
-  }
-
-  fire = (channel?: string) => {
-    this.fireCallback(this, channel);
-  }
-
-  raise = () => {
-    this.raiseCallback(this);
   }
 }

@@ -1,36 +1,44 @@
 // @flow
 
-import { Component, type Node } from 'react';
+import { Children, Component, type Node } from 'react';
 import PropTypes from 'prop-types';
-import AnalyticsEvent, { type FireAnalyticsEvent } from './AnalyticsEvent';
+import { UIAnalyticsEvent } from './';
+import type { UIAnalyticsEventHandlerSignature } from './types';
 
 type Props = {
   children?: Node,
-  channel: string,
-  onEvent: (event: AnalyticsEvent) => void,
-}
-
-const ContextTypes = {
-  fireAnalyticsEvent: PropTypes.func,
+  channel?: string,
+  onEvent: (event: UIAnalyticsEvent, channel?: string) => void,
 };
 
-export default class AnalyticsListener extends Component<Props> {
-  static contextTypes = ContextTypes
-  static childContextTypes = ContextTypes
+const ContextTypes = {
+  getAnalyticsEventHandlers: PropTypes.func,
+};
+
+export default class AnalyticsListener extends Component<Props, void> {
+  static contextTypes = ContextTypes;
+  static childContextTypes = ContextTypes;
 
   getChildContext = () => ({
-    fireAnalyticsEvent: this.fireAnalyticsEvent,
-  })
+    getAnalyticsEventHandlers: this.getAnalyticsEventHandlers,
+  });
 
-  fireAnalyticsEvent: FireAnalyticsEvent = (event, channel) => {
-    if (channel === this.props.channel) {
-      this.props.onEvent(event);
-    } else if (this.context.fireAnalyticsEvent) {
-      this.context.fireAnalyticsEvent(event, channel);
-    }
-  }
+  getAnalyticsEventHandlers = () => {
+    const { channel, onEvent } = this.props;
+    const { getAnalyticsEventHandlers } = this.context;
+    const parentEventHandlers =
+      (typeof getAnalyticsEventHandlers === 'function' &&
+        getAnalyticsEventHandlers()) ||
+      [];
+    const handler: UIAnalyticsEventHandlerSignature = (event, eventChannel) => {
+      if (channel === '*' || channel === eventChannel) {
+        onEvent(event, eventChannel);
+      }
+    };
+    return [handler, ...parentEventHandlers];
+  };
 
   render() {
-    return this.props.children;
+    return Children.only(this.props.children);
   }
 }
