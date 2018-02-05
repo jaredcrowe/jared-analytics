@@ -34,15 +34,20 @@ export type UIAnalyticsEventHandlerSignature = (
   channel?: ChannelIdentifier,
 ) => void;
 
+export type UIAnalyticsEventHandler = {
+  channel?: ?ChannelIdentifier,
+  handler: UIAnalyticsEventHandlerSignature,
+};
+
 export type UIAnalyticsEventProps = AnalyticsEventProps & {
   context: Array<ObjectType>,
-  handlers?: Array<UIAnalyticsEventHandlerSignature>,
+  handlers?: Array<UIAnalyticsEventHandler>,
 };
 
 export interface UIAnalyticsEventInterface {
   action: string;
   context: Array<ObjectType>;
-  handlers?: Array<UIAnalyticsEventHandlerSignature>;
+  handlers?: Array<UIAnalyticsEventHandler>;
   hasFired: boolean;
   payload: AnalyticsEventPayload;
 

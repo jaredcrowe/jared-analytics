@@ -35,7 +35,7 @@ export default class AnalyticsListener extends Component<Props, void> {
         onEvent(event, eventChannel);
       }
     };
-    return [handler, ...parentEventHandlers];
+    return [{ channel, handler }, ...parentEventHandlers];
   };
 
   render() {

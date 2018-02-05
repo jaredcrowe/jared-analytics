@@ -6,7 +6,7 @@ import AnalyticsEvent from './AnalyticsEvent';
 import type {
   AnalyticsEventUpdater,
   ObjectType,
-  UIAnalyticsEventHandlerSignature,
+  UIAnalyticsEventHandler,
   UIAnalyticsEventInterface,
   UIAnalyticsEventProps,
 } from './types';
@@ -18,13 +18,13 @@ const { warn } = console;
 export default class UIAnalyticsEvent extends AnalyticsEvent
   implements UIAnalyticsEventInterface {
   context: Array<ObjectType>;
-  handlers: Array<UIAnalyticsEventHandlerSignature>;
+  handlers: Array<UIAnalyticsEventHandler>;
   hasFired: boolean;
 
   constructor(props: UIAnalyticsEventProps) {
     super(props);
     this.context = props.context || [];
-    this.handlers = props.handlers || [noop];
+    this.handlers = props.handlers || [{ handler: noop }];
     this.hasFired = false;
   }
 
@@ -45,8 +45,13 @@ export default class UIAnalyticsEvent extends AnalyticsEvent
       warn('Cannot fire an event twice.');
       return;
     }
-    this.handlers.forEach(handler => {
+    const firedOn = [];
+    this.handlers.forEach(({ channel: handlerChannel, handler }) => {
+      if (firedOn.includes(handlerChannel) && handlerChannel !== '*') {
+        return;
+      }
       handler(this, channel);
+      firedOn.push(handlerChannel);
     });
     this.hasFired = true;
   };

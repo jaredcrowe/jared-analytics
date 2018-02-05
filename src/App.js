@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable no-console */
 
 import React, { Component } from 'react';
 import '@atlaskit/css-reset'; // eslint-disable-line import/extensions
@@ -10,10 +9,14 @@ import sendAnalyticsEventToBackend from './sendAnalyticsEventToBackend';
 import FetchData from './components/FetchData';
 import Issue from './components/Issue';
 
-class App extends Component<void> {
+const sendAnalyticsEventToGrowth = (event, channel) =>
+  // eslint-disable-next-line no-console
+  console.log(`Snooped on event on ${channel || 'null'} channel:`, event);
+
+export default class App extends Component<void> {
   render() {
     return (
-      <AnalyticsListener onEvent={sendAnalyticsEventToBackend}>
+      <AnalyticsListener channel="*" onEvent={sendAnalyticsEventToGrowth}>
         <AnalyticsListener
           channel="atlaskit"
           onEvent={sendAnalyticsEventToBackend}
@@ -34,5 +37,3 @@ class App extends Component<void> {
     );
   }
 }
-
-export default App;
