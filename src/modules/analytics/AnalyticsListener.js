@@ -3,7 +3,6 @@
 import { Children, Component, type Node } from 'react';
 import PropTypes from 'prop-types';
 import { UIAnalyticsEvent } from './';
-import type { UIAnalyticsEventHandlerSignature } from './types';
 
 type Props = {
   children?: Node,
@@ -30,12 +29,16 @@ export default class AnalyticsListener extends Component<Props, void> {
       (typeof getAnalyticsEventHandlers === 'function' &&
         getAnalyticsEventHandlers()) ||
       [];
-    const handler: UIAnalyticsEventHandlerSignature = (event, eventChannel) => {
-      if (channel === '*' || channel === eventChannel) {
-        onEvent(event, eventChannel);
-      }
-    };
-    return [{ channel, handler }, ...parentEventHandlers];
+
+    const handlerIsAlreadyRegistered = parentEventHandlers.filter(
+      ({ channel: eventChannel, handler }) =>
+        channel === eventChannel && onEvent === handler,
+    ).length;
+
+    if (handlerIsAlreadyRegistered && channel !== '*') {
+      return parentEventHandlers;
+    }
+    return [{ channel, handler: onEvent }, ...parentEventHandlers];
   };
 
   render() {

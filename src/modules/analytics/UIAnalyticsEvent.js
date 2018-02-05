@@ -45,13 +45,10 @@ export default class UIAnalyticsEvent extends AnalyticsEvent
       warn('Cannot fire an event twice.');
       return;
     }
-    const firedOn = [];
-    this.handlers.forEach(({ channel: handlerChannel, handler }) => {
-      if (firedOn.includes(handlerChannel) && handlerChannel !== '*') {
-        return;
+    this.handlers.forEach(({ channel: listenerChannel, handler }) => {
+      if (channel === listenerChannel || listenerChannel === '*') {
+        handler(this, channel);
       }
-      handler(this, channel);
-      firedOn.push(handlerChannel);
     });
     this.hasFired = true;
   };
