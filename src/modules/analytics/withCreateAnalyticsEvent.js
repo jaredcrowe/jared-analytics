@@ -43,7 +43,10 @@ export default function withCreateAnalyticsEvent<ProvidedProps: ObjectType>(
           (typeof getAnalyticsContext === 'function' &&
             getAnalyticsContext()) ||
           [];
-        const handlers = getAnalyticsEventHandlers();
+        const handlers =
+          (typeof getAnalyticsEventHandlers === 'function' &&
+            getAnalyticsEventHandlers()) ||
+          [];
         return new UIAnalyticsEvent({ action, context, handlers, payload });
       };
 
