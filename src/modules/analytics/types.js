@@ -35,7 +35,7 @@ export type UIAnalyticsEventHandlerSignature = (
 ) => void;
 
 export type UIAnalyticsEventProps = AnalyticsEventProps & {
-  context: Array<ObjectType>,
+  context?: Array<ObjectType>,
   handlers?: Array<UIAnalyticsEventHandlerSignature>,
 };
 
