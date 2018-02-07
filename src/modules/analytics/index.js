@@ -14,6 +14,6 @@ export { default as withAnalyticsContext } from './withAnalyticsContext';
 
 // createAnalyticsEvent HOC
 export {
-  default as withCreateAnalyticsEvent,
-  WithCreateAnalyticsEventProps,
-} from './withCreateAnalyticsEvent';
+  default as withAnalyticsEvents,
+  WithAnalyticsEventsProps,
+} from './withAnalyticsEvents';

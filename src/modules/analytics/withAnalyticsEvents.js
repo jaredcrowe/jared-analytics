@@ -11,7 +11,7 @@ export type CreateUIAnalyticsEventSignature = (
   payload?: AnalyticsEventPayload,
 ) => UIAnalyticsEvent;
 
-export type WithCreateAnalyticsEventProps = {
+export type WithAnalyticsEventsProps = {
   createAnalyticsEvent: CreateUIAnalyticsEventSignature,
 };
 
@@ -24,11 +24,11 @@ type EventMap<ProvidedProps> = {
       ) => UIAnalyticsEvent | void),
 };
 
-export default function withCreateAnalyticsEvent<ProvidedProps: ObjectType>(
+export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
   createEventMap: EventMap<ProvidedProps> = {},
 ) {
   return (WrappedComponent: ComponentType<ProvidedProps>) =>
-    class WithCreateAnalyticsEvent extends Component<ProvidedProps> {
+    class WithAnalyticsEvents extends Component<ProvidedProps> {
       static contextTypes = {
         getAnalyticsEventHandlers: PropTypes.func,
         getAnalyticsContext: PropTypes.func,

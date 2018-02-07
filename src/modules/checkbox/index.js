@@ -2,11 +2,11 @@
 
 import React from 'react';
 import {
-  withCreateAnalyticsEvent,
-  type WithCreateAnalyticsEventProps,
+  withAnalyticsEvents,
+  type WithAnalyticsEventsProps,
 } from '../analytics';
 
-type Props = WithCreateAnalyticsEventProps & {
+type Props = WithAnalyticsEventsProps & {
   checked: boolean,
   onChange: (e: MouseEvent) => void,
 };
@@ -15,7 +15,7 @@ const Input = ({ createAnalyticsEvent, ...props }: Props) => (
   <input type="checkbox" {...props} />
 );
 
-export default withCreateAnalyticsEvent({
+export default withAnalyticsEvents({
   onChange: (createEvent, props) =>
     createEvent('change', { checked: !props.checked }),
 })(Input);
