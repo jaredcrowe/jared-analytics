@@ -22,8 +22,8 @@ class Button extends Component<Props, void> {
 export default withAnalyticsContext({ namespace: 'button' })(
   withAnalyticsEvents({
     onClick: createEvent => {
-      createEvent('click', { version: '1.0.0' }).fire('atlaskit');
-      return createEvent('click');
+      createEvent({ action: 'click', version: '1.0.0' }).fire('atlaskit');
+      return createEvent({ action: 'click' });
     },
   })(Button),
 );

@@ -26,7 +26,7 @@ export default (event: UIAnalyticsEvent, channel?: string = 'NULL CHANNEL') => {
     };
 
     const toClient = {
-      action: event.action,
+      action: event.payload.action || '',
       actionSubject,
       actionSubjectId,
       attributes,
@@ -39,7 +39,7 @@ export default (event: UIAnalyticsEvent, channel?: string = 'NULL CHANNEL') => {
   } else {
     // Event was created outside the UI
     const toClient = {
-      action: event.action,
+      action: event.payload.action || '',
       attributes: event.payload,
     };
     console.group('RECEIVED GENERIC EVENT:');

@@ -7,7 +7,6 @@ import UIAnalyticsEvent from './UIAnalyticsEvent';
 import type { AnalyticsEventPayload, ObjectType } from './types';
 
 export type CreateUIAnalyticsEventSignature = (
-  name: string,
   payload?: AnalyticsEventPayload,
 ) => UIAnalyticsEvent;
 
@@ -17,7 +16,7 @@ export type WithAnalyticsEventsProps = {
 
 type EventMap<ProvidedProps> = {
   [string]:
-    | string
+    | ObjectType
     | ((
         create: CreateUIAnalyticsEventSignature,
         props: ProvidedProps,
@@ -34,10 +33,7 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
         getAtlaskitAnalyticsContext: PropTypes.func,
       };
 
-      createAnalyticsEvent = (
-        action: string,
-        payload?: ObjectType = {},
-      ): UIAnalyticsEvent => {
+      createAnalyticsEvent = (payload?: ObjectType = {}): UIAnalyticsEvent => {
         const {
           getAtlaskitAnalyticsEventHandlers,
           getAtlaskitAnalyticsContext,
@@ -50,7 +46,7 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
           (typeof getAtlaskitAnalyticsEventHandlers === 'function' &&
             getAtlaskitAnalyticsEventHandlers()) ||
           [];
-        return new UIAnalyticsEvent({ action, context, handlers, payload });
+        return new UIAnalyticsEvent({ context, handlers, payload });
       };
 
       mapCreateEventsToProps = () => {
@@ -60,7 +56,7 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
             const providedCallback = this.props[propCallbackName];
             if (
               !providedCallback ||
-              !['string', 'function'].includes(typeof eventCreator)
+              !['object', 'function'].includes(typeof eventCreator)
             ) {
               return modified;
             }

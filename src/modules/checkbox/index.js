@@ -17,5 +17,5 @@ const Input = ({ createAnalyticsEvent, ...props }: Props) => (
 
 export default withAnalyticsEvents({
   onChange: (createEvent, props) =>
-    createEvent('change', { checked: !props.checked }),
+    createEvent({ action: 'change', checked: !props.checked }),
 })(Input);

@@ -20,7 +20,9 @@ const mockReduxAddCommentAction = async analyticsEvent => {
   const commentId = await new Promise(resolve =>
     window.setTimeout(() => resolve(Math.round(Math.random() * 1000)), 1000),
   );
-  analyticsEvent.update({ commentId }).fire('jira');
+  analyticsEvent
+    .update({ action: 'comment-create-successful', commentId })
+    .fire('jira');
 };
 
 export default class Issue extends Component<Props, State> {
@@ -30,6 +32,11 @@ export default class Issue extends Component<Props, State> {
   };
 
   addComment = (e: Event, analyticsEvent: UIAnalyticsEvent) => {
+    analyticsEvent.update(payload => ({
+      ...payload,
+      originalAction: payload.action,
+      action: 'comment-create-requested',
+    }));
     const pessimisticAnalyticsEvent = analyticsEvent.clone();
     analyticsEvent.fire('jira');
     mockReduxAddCommentAction(pessimisticAnalyticsEvent);
@@ -47,7 +54,7 @@ export default class Issue extends Component<Props, State> {
 
   onEvent = (event: UIAnalyticsEvent, field: string) => {
     const { issueId } = this.props;
-    event.update({ field, issueId }).fire('jira');
+    event.update({ action: 'issue-updated', field, issueId }).fire('jira');
   };
 
   render() {
