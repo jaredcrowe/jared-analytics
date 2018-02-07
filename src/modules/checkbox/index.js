@@ -7,7 +7,7 @@ import {
 } from '../analytics';
 
 type Props = WithAnalyticsEventsProps & {
-  checked: boolean,
+  defaultChecked: boolean,
   onChange: (e: MouseEvent) => void,
 };
 
@@ -16,6 +16,9 @@ const Input = ({ createAnalyticsEvent, ...props }: Props) => (
 );
 
 export default withAnalyticsEvents({
-  onChange: (createEvent, props) =>
-    createEvent({ action: 'change', checked: !props.checked }),
+  onChange: (createEvent, props) => {
+    createEvent({ action: 'change', checked: !props.defaultChecked }).fire(
+      'atlaskit',
+    );
+  },
 })(Input);

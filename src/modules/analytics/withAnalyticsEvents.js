@@ -33,6 +33,13 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
         getAtlaskitAnalyticsContext: PropTypes.func,
       };
 
+      propsWithEvents: ProvidedProps;
+
+      constructor(props: ProvidedProps) {
+        super(props);
+        this.propsWithEvents = this.mapCreateEventsToProps();
+      }
+
       createAnalyticsEvent = (payload?: ObjectType = {}): UIAnalyticsEvent => {
         const {
           getAtlaskitAnalyticsEventHandlers,
@@ -50,14 +57,11 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
       };
 
       mapCreateEventsToProps = () => {
-        const patchedProps = Object.keys(createEventMap).reduce(
+        const propsWithEvents = Object.keys(createEventMap).reduce(
           (modified, propCallbackName) => {
             const eventCreator = createEventMap[propCallbackName];
             const providedCallback = this.props[propCallbackName];
-            if (
-              !providedCallback ||
-              !['object', 'function'].includes(typeof eventCreator)
-            ) {
+            if (!['object', 'function'].includes(typeof eventCreator)) {
               return modified;
             }
             const modifiedCallback = (...args) => {
@@ -66,7 +70,9 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
                   ? eventCreator(this.createAnalyticsEvent, this.props)
                   : this.createAnalyticsEvent(eventCreator);
 
-              providedCallback(...args, analyticsEvent);
+              if (providedCallback) {
+                providedCallback(...args, analyticsEvent);
+              }
             };
             return {
               ...modified,
@@ -76,14 +82,13 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
           {},
         );
 
-        return { ...this.props, ...patchedProps };
+        return { ...this.props, ...propsWithEvents };
       };
 
       render() {
-        const patchedProps = this.mapCreateEventsToProps();
         return (
           <WrappedComponent
-            {...patchedProps}
+            {...this.propsWithEvents}
             createAnalyticsEvent={this.createAnalyticsEvent}
           />
         );
