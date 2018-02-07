@@ -11,13 +11,14 @@ export default function withAnalyticsContext<ProvidedProps: ObjectType>(
   return (WrappedComponent: ComponentType<ProvidedProps>) =>
     class WithAnalyticsContext extends Component<ProvidedProps> {
       static defaultProps = {
-        analyticsContext: defaultData,
+        analyticsContext: {},
       };
 
       render() {
         const { analyticsContext, ...props } = this.props;
+        const data = { ...defaultData, ...analyticsContext };
         return (
-          <AnalyticsContext data={analyticsContext}>
+          <AnalyticsContext data={data}>
             <WrappedComponent {...props} />
           </AnalyticsContext>
         );
