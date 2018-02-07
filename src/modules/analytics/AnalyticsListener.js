@@ -12,7 +12,7 @@ type Props = {
 };
 
 const ContextTypes = {
-  getAnalyticsEventHandlers: PropTypes.func,
+  getAtlaskitAnalyticsEventHandlers: PropTypes.func,
 };
 
 export default class AnalyticsListener extends Component<Props, void> {
@@ -20,15 +20,15 @@ export default class AnalyticsListener extends Component<Props, void> {
   static childContextTypes = ContextTypes;
 
   getChildContext = () => ({
-    getAnalyticsEventHandlers: this.getAnalyticsEventHandlers,
+    getAtlaskitAnalyticsEventHandlers: this.getAnalyticsEventHandlers,
   });
 
   getAnalyticsEventHandlers = () => {
     const { channel, onEvent } = this.props;
-    const { getAnalyticsEventHandlers } = this.context;
+    const { getAtlaskitAnalyticsEventHandlers } = this.context;
     const parentEventHandlers =
-      (typeof getAnalyticsEventHandlers === 'function' &&
-        getAnalyticsEventHandlers()) ||
+      (typeof getAtlaskitAnalyticsEventHandlers === 'function' &&
+        getAtlaskitAnalyticsEventHandlers()) ||
       [];
     const handler: UIAnalyticsEventHandlerSignature = (event, eventChannel) => {
       if (channel === '*' || channel === eventChannel) {

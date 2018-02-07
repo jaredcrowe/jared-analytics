@@ -30,22 +30,25 @@ export default function withAnalyticsEvents<ProvidedProps: ObjectType>(
   return (WrappedComponent: ComponentType<ProvidedProps>) =>
     class WithAnalyticsEvents extends Component<ProvidedProps> {
       static contextTypes = {
-        getAnalyticsEventHandlers: PropTypes.func,
-        getAnalyticsContext: PropTypes.func,
+        getAtlaskitAnalyticsEventHandlers: PropTypes.func,
+        getAtlaskitAnalyticsContext: PropTypes.func,
       };
 
       createAnalyticsEvent = (
         action: string,
         payload?: ObjectType = {},
       ): UIAnalyticsEvent => {
-        const { getAnalyticsEventHandlers, getAnalyticsContext } = this.context;
+        const {
+          getAtlaskitAnalyticsEventHandlers,
+          getAtlaskitAnalyticsContext,
+        } = this.context;
         const context =
-          (typeof getAnalyticsContext === 'function' &&
-            getAnalyticsContext()) ||
+          (typeof getAtlaskitAnalyticsContext === 'function' &&
+            getAtlaskitAnalyticsContext()) ||
           [];
         const handlers =
-          (typeof getAnalyticsEventHandlers === 'function' &&
-            getAnalyticsEventHandlers()) ||
+          (typeof getAtlaskitAnalyticsEventHandlers === 'function' &&
+            getAtlaskitAnalyticsEventHandlers()) ||
           [];
         return new UIAnalyticsEvent({ action, context, handlers, payload });
       };

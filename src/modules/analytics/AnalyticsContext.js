@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import type { ObjectType } from './types';
 
 const ContextTypes = {
-  getAnalyticsContext: PropTypes.func,
+  getAtlaskitAnalyticsContext: PropTypes.func,
 };
 
 type Props = {
@@ -20,14 +20,15 @@ export default class AnalyticsContext extends Component<Props> {
   static childContextTypes = ContextTypes;
 
   getChildContext = () => ({
-    getAnalyticsContext: this.getAnalyticsContext,
+    getAtlaskitAnalyticsContext: this.getAnalyticsContext,
   });
 
   getAnalyticsContext = () => {
     const { data } = this.props;
-    const { getAnalyticsContext } = this.context;
+    const { getAtlaskitAnalyticsContext } = this.context;
     const ancestorData =
-      (typeof getAnalyticsContext === 'function' && getAnalyticsContext()) ||
+      (typeof getAtlaskitAnalyticsContext === 'function' &&
+        getAtlaskitAnalyticsContext()) ||
       [];
     return [...ancestorData, data];
   };
