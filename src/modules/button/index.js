@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 
 import {
   withAnalyticsContext,
-  withCreateAnalyticsEvent,
-  type WithCreateAnalyticsEventProps,
+  withAnalyticsEvents,
+  type WithAnalyticsEventsProps,
 } from '../analytics';
 
-type Props = WithCreateAnalyticsEventProps & {
+type Props = WithAnalyticsEventsProps & {
   onClick: (e: MouseEvent) => void,
 };
 
@@ -20,10 +20,10 @@ class Button extends Component<Props, void> {
 }
 
 export default withAnalyticsContext({ namespace: 'button' })(
-  withCreateAnalyticsEvent({
+  withAnalyticsEvents({
     onClick: createEvent => {
-      createEvent('click', { version: '1.0.0' }).fire('atlaskit');
-      return createEvent('click');
+      createEvent({ action: 'click', version: '1.0.0' }).fire('atlaskit');
+      return createEvent({ action: 'click' });
     },
   })(Button),
 );

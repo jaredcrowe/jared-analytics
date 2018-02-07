@@ -9,18 +9,15 @@ import type {
 } from './types';
 
 export default class AnalyticsEvent implements AnalyticsEventInterface {
-  action: string;
   payload: {};
 
   constructor(props: AnalyticsEventProps) {
-    this.action = props.action;
     this.payload = props.payload;
   }
 
   clone = (): AnalyticsEvent => {
-    const action = this.action;
     const payload = cloneDeep(this.payload);
-    return new AnalyticsEvent({ action, payload });
+    return new AnalyticsEvent({ payload });
   };
 
   update(updater: AnalyticsEventUpdater): this {

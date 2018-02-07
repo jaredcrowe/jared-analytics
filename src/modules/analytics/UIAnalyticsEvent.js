@@ -33,11 +33,10 @@ export default class UIAnalyticsEvent extends AnalyticsEvent
       warn("Cannot clone an event after it's been fired.");
       return null;
     }
-    const action = this.action;
     const context = [...this.context];
     const handlers = [...this.handlers];
     const payload = cloneDeep(this.payload);
-    return new UIAnalyticsEvent({ action, context, handlers, payload });
+    return new UIAnalyticsEvent({ context, handlers, payload });
   };
 
   fire = (channel?: string) => {

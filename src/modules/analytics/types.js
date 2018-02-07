@@ -14,12 +14,10 @@ export type AnalyticsEventUpdater =
   | ((payload: AnalyticsEventPayload) => AnalyticsEventPayload);
 
 export type AnalyticsEventProps = {
-  action: string,
   payload: {},
 };
 
 export interface AnalyticsEventInterface {
-  action: string;
   payload: AnalyticsEventPayload;
 
   clone: () => AnalyticsEvent;
@@ -40,7 +38,6 @@ export type UIAnalyticsEventProps = AnalyticsEventProps & {
 };
 
 export interface UIAnalyticsEventInterface {
-  action: string;
   context: Array<ObjectType>;
   handlers?: Array<UIAnalyticsEventHandlerSignature>;
   hasFired: boolean;

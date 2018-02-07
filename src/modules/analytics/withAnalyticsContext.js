@@ -5,19 +5,20 @@ import React, { Component, type ComponentType } from 'react';
 import AnalyticsContext from './AnalyticsContext';
 import type { ObjectType } from './types';
 
-export default function withAnalyticsNamespace<ProvidedProps: ObjectType>(
+export default function withAnalyticsContext<ProvidedProps: ObjectType>(
   defaultData?: ObjectType = {},
 ) {
   return (WrappedComponent: ComponentType<ProvidedProps>) =>
-    class WithAnalyticsNamespace extends Component<ProvidedProps> {
+    class WithAnalyticsContext extends Component<ProvidedProps> {
       static defaultProps = {
-        analyticsContext: defaultData,
+        analyticsContext: {},
       };
 
       render() {
         const { analyticsContext, ...props } = this.props;
+        const data = { ...defaultData, ...analyticsContext };
         return (
-          <AnalyticsContext data={analyticsContext}>
+          <AnalyticsContext data={data}>
             <WrappedComponent {...props} />
           </AnalyticsContext>
         );
